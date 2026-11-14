@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>球星卡面板</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+/* 布局思路：夜场球场的更衣室墙面。深色底只做陪衬，所有的亮度都留给卡面的金属渐变。
+   卡片是切角长方形（右上、左下切角），尺寸全部用容器单位，手机两列也不变形。 */
+:root{
+  color-scheme:dark;
+  --night:#12151f;      /* 页面底色 */
+  --panel:#1b2030;      /* 面板、弹窗 */
+  --line:#2c3347;       /* 分隔线 */
+  --chalk:#eef0f5;      /* 主文字 */
+  --mute:#8f98ad;       /* 次要文字 */
+  --whistle:#ff5a4d;    /* 强调色：主按钮 */
+  --good:#3ecf8e; --warn:#f2b441; --bad:#ef6b5e;
+  --num:"Saira Condensed","Noto Sans SC",system-ui,sans-serif;
+  --body:"Noto Sans SC",system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--night);color:var(--chalk);font-family:var(--body);font-size:15px;line-height:1.5;
+  background-image:radial-gradient(90% 50% at 50% -10%,#27304a 0,transparent 70%);background-repeat:no-repeat}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--whistle);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 16px 56px}
+
+header{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 18px;margin-bottom:16px}
+h1{font-size:26px;font-weight:900;margin:0;letter-spacing:.02em;text-wrap:balance}
+.sum{display:flex;gap:16px;color:var(--mute);font-size:13px}
+.sum b{font-family:var(--num);font-size:20px;color:var(--chalk);margin-right:4px;font-variant-numeric:tabular-nums}
+.status{margin-left:auto;font-size:12px;color:var(--mute);display:flex;align-items:center;gap:6px}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--mute)}
+.status.ok i{background:var(--good)} .status.local i{background:var(--warn)}
+
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:transparent;border-radius:999px;padding:5px 13px;font-size:13px;cursor:pointer;color:var(--mute)}
+.chip[aria-pressed="true"]{background:var(--chalk);color:var(--night);border-color:var(--chalk);font-weight:700}
+.field,select.field{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 10px;min-width:0}
+#q{flex:1 1 140px}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:7px 14px;cursor:pointer;font-weight:500}
+.btn:hover{border-color:var(--mute)}
+.btn.primary{background:var(--whistle);border-color:var(--whistle);color:#1a0806;font-weight:700}
+.btn.danger{color:var(--bad)}
+.note{border:1px dashed var(--line);border-radius:10px;padding:10px 14px;color:var(--mute);font-size:13px;margin-bottom:14px}
+.note b{color:var(--chalk)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:18px 14px}
+@media(min-width:700px){.grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:26px 22px}}
+.empty{color:var(--mute);padding:40px 0;text-align:center;grid-column:1/-1}
+
+/* ---------- 卡片：公共 ---------- */
+.card{container-type:inline-size;display:block;width:100%;padding:0;border:0;background:none;cursor:pointer;text-align:left;
+  filter:drop-shadow(0 7px 12px rgba(0,0,0,.5));transition:transform .18s ease;transform:perspective(700px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg))}
+.card-in{position:relative;display:block;aspect-ratio:100/142;overflow:hidden;color:var(--ink);isolation:isolate}
+.card-in>*{position:absolute}
+.sheen{inset:0;pointer-events:none;opacity:0;transition:opacity .2s;mix-blend-mode:soft-light;
+  background:radial-gradient(45cqw circle at var(--mx,50%) var(--my,30%),rgba(255,255,255,.95),transparent 70%)}
+@media(hover:hover){.card:hover .sheen{opacity:1}}
+.c-photo{display:flex;align-items:flex-end;justify-content:center;-webkit-mask-image:linear-gradient(#000 80%,transparent);mask-image:linear-gradient(#000 80%,transparent)}
+.c-photo img{max-width:100%;max-height:100%;object-fit:contain;object-position:bottom;display:block;filter:drop-shadow(0 1cqw 2.5cqw rgba(0,0,0,.35))}
+.c-photo.frame{align-items:stretch;-webkit-mask-image:linear-gradient(to right,transparent 0,#000 40%),linear-gradient(#000 70%,transparent);-webkit-mask-composite:source-in;
+  mask-image:linear-gradient(to right,transparent 0,#000 40%),linear-gradient(#000 70%,transparent);mask-composite:intersect}
+.c-photo.frame img{width:100%;height:100%;max-width:none;max-height:none;object-fit:cover;object-position:50% 12%;filter:none}
+.c-photo svg{width:74%;height:auto;opacity:.22;fill:var(--ink)}
+.c-left{display:flex;flex-direction:column;align-items:center;gap:.6cqw;text-align:center}
+.c-ovr{font-family:var(--num);font-weight:800;line-height:.86;font-variant-numeric:tabular-nums}
+.c-pos{font-family:var(--num);font-weight:600;font-size:10cqw;line-height:1;letter-spacing:.05em}
+.c-rule{width:14cqw;height:.5cqw;background:currentColor;opacity:.45;margin:1.4cqw 0}
+.c-tag{font-family:var(--num);font-weight:600;font-size:7cqw;line-height:1.15;max-width:100%;overflow-wrap:anywhere}
+.c-name{display:flex;align-items:center;justify-content:center;font-weight:900;white-space:nowrap;letter-spacing:.03em}
+.c-stats{display:grid}
+.c-stats span{display:flex}
+.c-stats b{font-family:var(--num);font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+.c-stats em{font-style:normal;font-weight:500}
+.c-ghost{font-family:var(--num);font-weight:800;line-height:.85;pointer-events:none;white-space:nowrap}
+.c-club{font-size:5.6cqw;font-weight:700;letter-spacing:.18em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c-ex{right:13cqw;top:3cqw;font-size:5.2cqw;font-weight:700;opacity:.65;z-index:2}
+/* 特殊卡面常驻一道扫光 */
+.t-onyx .card-in::after,.t-legend .card-in::after,.t-prism .card-in::after{content:"";position:absolute;inset:0;pointer-events:none;mix-blend-mode:overlay;
+  background:linear-gradient(110deg,transparent 42%,rgba(255,255,255,.7) 50%,transparent 58%) 130% 0/260% 100% no-repeat;animation:sweep 5s ease-in-out infinite}
+@keyframes sweep{0%,55%{background-position:130% 0}100%{background-position:-60% 0}}
+
+.t-bronze{--c1:#f3c4a0;--c2:#b06c42;--c3:#57290f;--ink:#2a1408;--glow:#ff9d5c;--plate:#2a1408;--plate-ink:#f7d2b4}
+.t-silver{--c1:#ffffff;--c2:#b4bcc9;--c3:#5d6776;--ink:#1b2029;--glow:#cfdcf2;--plate:#1b2029;--plate-ink:#f3f6fa}
+.t-gold{--c1:#fff3c2;--c2:#e3b033;--c3:#8a5a06;--ink:#2c1d02;--glow:#ffd24a;--plate:#2c1d02;--plate-ink:#ffe9a0}
+.t-onyx{--c1:#4d5263;--c2:#17181d;--c3:#040405;--ink:#f0cf7a;--glow:#f0cf7a;--plate:#f0cf7a;--plate-ink:#131317}
+.t-legend{--c1:#ffffff;--c2:#efe3c8;--c3:#b89d5e;--ink:#57400c;--glow:#ffeab0;--plate:#57400c;--plate-ink:#fff8e2}
+.t-prism{--c1:#7cf3e1;--c2:#6b7cff;--c3:#c543d1;--ink:#ffffff;--glow:#8ffcf0;--plate:#1b1145;--plate-ink:#ffffff}
+
+/* ---------- 风格一：锋刃（切角金属牌） ---------- */
+.s-blade .card-in{--k:12cqw;clip-path:polygon(0 0,calc(100% - var(--k)) 0,100% var(--k),100% 100%,var(--k) 100%,0 calc(100% - var(--k)));
+  background:linear-gradient(118deg,transparent 28%,rgba(255,255,255,.38) 44%,transparent 56%),linear-gradient(160deg,var(--c1),var(--c2) 46%,var(--c3))}
+.s-blade .c-fx{inset:0;background:repeating-conic-gradient(from 8deg at 64% 34%,rgba(255,255,255,.26) 0 3deg,transparent 3deg 11deg);
+  -webkit-mask-image:radial-gradient(circle at 64% 34%,#000 6%,transparent 60%);mask-image:radial-gradient(circle at 64% 34%,#000 6%,transparent 60%)}
+.s-blade .c-ghost{right:4cqw;top:4cqw;font-size:60cqw;opacity:.12;letter-spacing:-.04em}
+.s-blade .c-photo{right:2cqw;top:8cqw;width:68cqw;height:76cqw}
+.s-blade .c-left{left:7cqw;top:9cqw;width:26cqw}
+.s-blade .c-ovr{font-size:27cqw;text-shadow:0 .5cqw 0 rgba(255,255,255,.3)}
+.s-blade .c-name{left:3.4cqw;right:3.4cqw;top:84cqw;height:14.5cqw;background:var(--plate);color:var(--plate-ink);padding:0 5cqw;
+  clip-path:polygon(4.5cqw 0,100% 0,calc(100% - 4.5cqw) 100%,0 100%)}
+.s-blade .c-stats{left:5cqw;right:5cqw;top:104cqw;grid-template-columns:repeat(6,1fr)}
+.s-blade .c-stats span{flex-direction:column-reverse;align-items:center;gap:1.2cqw}
+.s-blade .c-stats span+span{border-left:.35cqw solid color-mix(in srgb,currentColor 28%,transparent)}
+.s-blade .c-stats b{font-size:9.4cqw}
+.s-blade .c-stats em{font-size:5.3cqw;opacity:.8}
+.s-blade .c-club{left:16cqw;right:16cqw;top:127.5cqw;text-align:center;opacity:.72}
+.s-blade .c-frame{inset:2.6cqw;--k:10.4cqw;--t:.6cqw;--o:.25cqw;background:color-mix(in srgb,var(--ink) 50%,transparent);pointer-events:none;
+  clip-path:polygon(evenodd,0 0,calc(100% - var(--k)) 0,100% var(--k),100% 100%,var(--k) 100%,0 calc(100% - var(--k)),0 0,
+  var(--t) var(--t),var(--t) calc(100% - var(--k) - var(--o)),calc(var(--k) + var(--o)) calc(100% - var(--t)),calc(100% - var(--t)) calc(100% - var(--t)),calc(100% - var(--t)) calc(var(--k) + var(--o)),calc(100% - var(--k) - var(--o)) var(--t),var(--t) var(--t))}
+
+/* ---------- 风格二：夜幕（黑底霓虹海报） ---------- */
+.s-noir .card-in{--ink:#fff;border-radius:6cqw;
+  background:radial-gradient(85% 55% at 80% 16%,color-mix(in srgb,var(--glow) 62%,transparent),transparent 72%),
+    radial-gradient(70% 45% at 0 100%,color-mix(in srgb,var(--c3) 55%,transparent),transparent 75%),linear-gradient(180deg,#1b1e29,#06070a 78%)}
+.s-noir.t-prism .card-in{background:radial-gradient(85% 55% at 80% 16%,rgba(124,243,225,.6),transparent 72%),radial-gradient(80% 50% at 0 100%,rgba(197,67,209,.6),transparent 75%),linear-gradient(180deg,#1b1e29,#06070a 78%)}
+.s-noir .c-fx{inset:0;background:repeating-linear-gradient(115deg,color-mix(in srgb,var(--glow) 16%,transparent) 0 .5cqw,transparent .5cqw 6.5cqw);
+  -webkit-mask-image:linear-gradient(200deg,#000,transparent 62%);mask-image:linear-gradient(200deg,#000,transparent 62%)}
+.s-noir .c-ghost{right:5cqw;top:6cqw;font-size:40cqw;opacity:.7;color:transparent;-webkit-text-stroke:.45cqw color-mix(in srgb,var(--glow) 34%,transparent)}
+.s-noir .c-photo{right:0;top:5cqw;width:80cqw;height:92cqw;-webkit-mask-image:linear-gradient(#000 66%,transparent 98%);mask-image:linear-gradient(#000 66%,transparent 98%)}
+.s-noir .c-photo.frame{-webkit-mask-image:linear-gradient(to right,transparent 0,#000 45%),linear-gradient(#000 60%,transparent 96%);mask-image:linear-gradient(to right,transparent 0,#000 45%),linear-gradient(#000 60%,transparent 96%)}
+.s-noir .c-left{left:7cqw;top:8cqw;align-items:flex-start;text-align:left}
+.s-noir .c-ovr{font-size:31cqw;color:var(--glow);text-shadow:0 0 7cqw color-mix(in srgb,var(--glow) 65%,transparent)}
+.s-noir .c-pos{font-size:11cqw}
+.s-noir .c-rule{display:none}
+.s-noir .c-tag{opacity:.75;margin-top:.8cqw}
+.s-noir .c-name{left:7cqw;right:7cqw;top:95cqw;height:14cqw;justify-content:flex-start;border-bottom:.6cqw solid var(--glow);text-shadow:0 .4cqw 2cqw #000}
+.s-noir .c-stats{left:7cqw;right:5cqw;top:114cqw;grid-template-columns:repeat(6,1fr)}
+.s-noir .c-stats span{flex-direction:column;align-items:flex-start;gap:1cqw}
+.s-noir .c-stats b{font-size:9.4cqw}
+.s-noir .c-stats em{font-size:5.2cqw;color:var(--glow);opacity:.85}
+.s-noir .c-club{left:7cqw;right:7cqw;top:132.5cqw;color:var(--glow);opacity:.8;font-size:5.2cqw}
+.s-noir .c-frame{inset:0;border-radius:6cqw;pointer-events:none;box-shadow:inset 0 0 0 .7cqw color-mix(in srgb,var(--glow) 80%,transparent),inset 0 0 6cqw color-mix(in srgb,var(--glow) 30%,transparent)}
+.s-noir .c-ex{color:#fff}
+
+/* ---------- 风格三：镭射（金属边框收藏卡） ---------- */
+.s-holo .card-in{border-radius:6cqw;background:conic-gradient(from 215deg,var(--c3),var(--glow),var(--c2),var(--c3),var(--c1),var(--c2),var(--c3))}
+.s-holo .card-in::before{content:"";position:absolute;inset:2.8cqw;border-radius:3.6cqw;z-index:-1;
+  background:linear-gradient(170deg,var(--c1),var(--c2) 62%,var(--c3));box-shadow:inset 0 0 0 .5cqw rgba(255,255,255,.55),0 0 0 .4cqw rgba(0,0,0,.35)}
+.s-holo .c-fx{left:7cqw;right:7cqw;top:7cqw;height:73cqw;border-radius:3cqw;
+  background:radial-gradient(circle,rgba(255,255,255,.2) 0 .6cqw,transparent .7cqw) 0 0/4cqw 4cqw,linear-gradient(160deg,color-mix(in srgb,var(--c2) 45%,#0b0d14),color-mix(in srgb,var(--c3) 55%,#000));
+  box-shadow:inset 0 0 0 .6cqw color-mix(in srgb,var(--ink) 45%,transparent),inset 0 -6cqw 8cqw rgba(0,0,0,.35)}
+.s-holo .c-ghost,.s-holo .c-frame,.s-holo .c-club,.s-holo .c-rule{display:none}
+.s-holo .c-photo{left:7.6cqw;right:7.6cqw;top:9cqw;height:70.4cqw;border-radius:0 0 2.6cqw 2.6cqw;overflow:hidden;-webkit-mask-image:none;mask-image:none}
+.s-holo .c-photo.frame{top:7.6cqw;height:71.8cqw;border-radius:2.6cqw;-webkit-mask-image:none;mask-image:none}
+.s-holo .c-photo svg{fill:#fff}
+.s-holo .c-left{left:3.4cqw;top:3.4cqw;width:27cqw;gap:1.4cqw}
+.s-holo .c-ovr{width:27cqw;height:27cqw;border-radius:50%;display:grid;place-items:center;font-size:17cqw;line-height:1;
+  background:linear-gradient(150deg,var(--c1),var(--c2));box-shadow:0 0 0 1cqw var(--c3),0 0 0 1.5cqw rgba(255,255,255,.5),0 1.5cqw 3cqw rgba(0,0,0,.45)}
+.s-holo .c-pos{background:var(--plate);color:var(--plate-ink);font-size:7.6cqw;padding:1cqw 3.4cqw;border-radius:3cqw}
+.s-holo .c-tag{color:#fff;text-shadow:0 0 1.2cqw #000,0 0 .6cqw #000;font-size:6.4cqw}
+.s-holo .c-name{left:7cqw;right:7cqw;top:82cqw;height:15cqw;border-bottom:.5cqw solid color-mix(in srgb,currentColor 35%,transparent)}
+.s-holo .c-stats{left:10cqw;right:10cqw;top:100cqw;grid-auto-flow:column;grid-template-rows:repeat(3,auto);grid-template-columns:1fr 1fr;column-gap:6cqw;row-gap:.6cqw}
+.s-holo .c-stats span{align-items:baseline;gap:2.4cqw}
+.s-holo .c-stats b{font-size:10.5cqw;width:12cqw;text-align:right;line-height:1.08}
+.s-holo .c-stats em{font-size:6.2cqw;opacity:.85}
+.s-holo .c-stats::after{content:"";position:absolute;left:50%;top:6%;bottom:6%;width:.4cqw;background:currentColor;opacity:.3}
+.s-holo .c-ex{right:9cqw;top:9cqw;color:#fff}
+
+/* ---------- 翻面 ---------- */
+.flip{display:block;position:relative;transform-style:preserve-3d;transition:transform .75s cubic-bezier(.3,.7,.2,1)}
+.card.flipped .flip{transform:rotateY(180deg)}
+.card-in,.card-back{-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.card-back{position:absolute;inset:0;transform:rotateY(180deg);color:#fff;padding:8cqw 8cqw 7cqw;display:flex;flex-direction:column;gap:2.6cqw;overflow:hidden;border-radius:6cqw;
+  background:radial-gradient(90% 45% at 15% 0,color-mix(in srgb,var(--glow) 38%,transparent),transparent 72%),
+    repeating-linear-gradient(118deg,rgba(255,255,255,.035) 0 .8cqw,transparent .8cqw 5cqw),linear-gradient(170deg,color-mix(in srgb,var(--c3) 45%,#10131b),#08090d 72%);
+  box-shadow:inset 0 0 0 .7cqw color-mix(in srgb,var(--glow) 78%,transparent)}
+.s-blade .card-back{border-radius:0;clip-path:polygon(12cqw 0,100% 0,100% calc(100% - 12cqw),calc(100% - 12cqw) 100%,0 100%,0 12cqw);padding-left:10cqw}
+.b-head{display:flex;align-items:flex-end;justify-content:space-between;gap:3cqw}
+.b-name{font-weight:900;font-size:9cqw;line-height:1.15;overflow-wrap:anywhere}
+.b-ovr{font:800 15cqw/.85 var(--num);color:var(--glow)}
+.b-sub{font-size:4.9cqw;color:var(--glow);letter-spacing:.08em;border-bottom:.4cqw solid color-mix(in srgb,var(--glow) 45%,transparent);padding-bottom:2.4cqw}
+.b-bars{display:grid;gap:1.7cqw}
+.b-bars>span{display:grid;grid-template-columns:11.5cqw 8.5cqw 1fr;align-items:center;gap:2cqw}
+.b-bars em{font-style:normal;font-size:5cqw;opacity:.8}
+.b-bars b{font:800 7cqw/1 var(--num);text-align:right;font-variant-numeric:tabular-nums}
+.b-bars i{display:block;height:1.9cqw;border-radius:1cqw;background:rgba(255,255,255,.12);overflow:hidden}
+.b-bars i::after{content:"";display:block;height:100%;width:var(--w);border-radius:1cqw;background:linear-gradient(90deg,color-mix(in srgb,var(--glow) 55%,transparent),var(--glow))}
+.b-meta{display:grid;grid-template-columns:1fr 1fr;gap:1.5cqw 4cqw;font-size:4.9cqw;border-top:.4cqw solid rgba(255,255,255,.14);padding-top:2.6cqw}
+.b-meta span{display:flex;justify-content:space-between;gap:2cqw;white-space:nowrap;overflow:hidden}
+.b-meta em{font-style:normal;opacity:.6}
+.b-note{font-size:4.7cqw;line-height:1.45;opacity:.82;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+#dView{background:none;border:0;padding:0;width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;overflow:hidden}
+#dView[open]{display:grid;place-items:center}
+#dView::backdrop{background:rgba(6,8,14,.86)}
+.stage{width:min(80vw,340px);animation:pop .4s cubic-bezier(.2,.9,.3,1.2)}
+.stage .card{perspective:1100px;outline:none}
+.flip-hint{text-align:center;color:var(--mute);font-size:12.5px;margin:18px 0 0}
+@keyframes pop{from{transform:scale(.62);opacity:0}}
+.mlist{display:grid;max-height:60dvh;overflow:auto}
+.mrow{display:grid;grid-template-columns:2.4em 1fr auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.mrow>b{font:800 22px/1 var(--num);text-align:center}
+.mrow .who{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mrow .who small{color:var(--mute);margin-left:6px}
+.mrow .ops{display:flex;gap:6px}
+.mrow .btn{padding:4px 10px;font-size:13px}
+
+/* ---------- 弹窗 ---------- */
+dialog{border:1px solid var(--line);background:var(--panel);color:var(--chalk);border-radius:14px;padding:0;width:min(640px,calc(100vw - 24px));max-height:calc(100dvh - 24px)}
+dialog::backdrop{background:rgba(6,8,14,.72)}
+.dlg{padding:18px;display:flex;flex-direction:column;gap:14px}
+.dlg h2{margin:0;font-size:18px;font-weight:900}
+.dlg-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.x{border:0;background:none;font-size:22px;line-height:1;cursor:pointer;color:var(--mute);padding:4px 8px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.row.six{grid-template-columns:repeat(3,1fr)}
+@media(min-width:560px){.row.six{grid-template-columns:repeat(6,1fr)}}
+label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--mute);min-width:0}
+label .field{color:var(--chalk);font-size:15px;width:100%}
+fieldset{border:1px solid var(--line);border-radius:10px;padding:10px 12px 12px;margin:0;min-width:0}
+legend{font-size:12px;color:var(--mute);padding:0 6px}
+.acts{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.err{color:var(--bad);font-size:13px;min-height:1em}
+.hint{font-size:12px;color:var(--mute);margin:0}
+textarea.field{width:100%;min-height:150px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;white-space:pre;overflow:auto}
+
+.detail{display:grid;gap:18px;grid-template-columns:1fr}
+@media(min-width:560px){.detail{grid-template-columns:230px 1fr}}
+.detail .card{max-width:230px;margin:0 auto;cursor:default}
+.bars{display:grid;gap:7px}
+.bars div{display:grid;grid-template-columns:3.2em 2.2em 1fr;align-items:center;gap:8px;font-size:13px}
+.bars b{font-family:var(--num);font-size:19px;text-align:right;font-variant-numeric:tabular-nums}
+.bars i{height:7px;border-radius:4px;background:var(--line);overflow:hidden;display:block}
+.bars i::after{content:"";display:block;height:100%;width:var(--w);background:var(--k);border-radius:4px}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.meta span{border:1px solid var(--line);border-radius:6px;padding:3px 9px;font-size:12.5px;color:var(--mute)}
+.meta span b{color:var(--chalk);font-weight:500}
+.memo{color:var(--mute);font-size:13px;margin:10px 0 0;overflow-wrap:anywhere}
+.cut{display:grid;grid-template-columns:110px 1fr;gap:12px;margin-top:10px;align-items:start}
+.stylebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;font-size:13px;color:var(--mute)}
+.pv{height:130px;border-radius:8px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;background:linear-gradient(160deg,#fff0b8,#e8b93f 50%,#a87412)}
+.pv img{max-width:100%;max-height:100%;display:block}
+.cut-ctl{display:grid;gap:8px}
+input[type=range]{width:100%;accent-color:var(--whistle)}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--chalk);color:var(--night);padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;max-width:calc(100vw - 32px);z-index:99}
+@media(prefers-reduced-motion:reduce){.card{transition:none;transform:none}.sheen{transition:none}.card-in::after{animation:none!important}.flip{transition:none}.stage{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>球星卡面板</h1>
+    <div class="sum" id="sum"></div>
+    <div class="status" id="status"><i></i><span>准备中</span></div>
+  </header>
+
+  <div class="bar">
+    <button class="btn primary" id="addBtn" type="button">新建球星卡</button>
+    <button class="btn" id="importBtn" type="button">批量导入</button>
+    <button class="btn" id="exportBtn" type="button">导出</button>
+    <button class="btn" id="manageBtn" type="button">管理球员</button>
+  </div>
+  <div class="bar">
+    <div class="chips" id="chips" role="group" aria-label="按位置筛选"></div>
+    <input class="field" id="q" type="search" placeholder="搜索姓名、俱乐部" aria-label="搜索">
+    <select class="field" id="sort" aria-label="排序">
+      <option value="ovr">总评从高到低</option>
+      <option value="new">最近添加</option>
+      <option value="name">按姓名</option>
+      <option value="pos">按位置</option>
+    </select>
+  </div>
+
+  <div class="stylebar"><span>卡面风格</span><div class="chips" id="styles" role="group" aria-label="卡面风格"></div></div>
+  <div class="note" id="exNote" hidden><b>下面是示例卡。</b>添加第一张自己的卡后，示例会自动消失。点任意一张卡可以翻到背面看详细信息。</div>
+  <main class="grid" id="grid"></main>
+</div>
+
+<!-- 详情 -->
+<dialog id="dView" aria-label="球星卡详情"><div class="stage" id="viewBody"></div></dialog>
+
+<!-- 管理 -->
+<dialog id="dManage">
+  <div class="dlg">
+    <div class="dlg-head"><h2>管理球员</h2><button class="x" type="button" data-close aria-label="关闭">×</button></div>
+    <div class="mlist" id="mList"></div>
+    <div class="acts"><button class="btn" type="button" data-close>关闭</button><button class="btn primary" type="button" id="mAdd">新建球星卡</button></div>
+  </div>
+</dialog>
+
+<!-- 新建 / 编辑 -->
+<dialog id="dEdit">
+  <form class="dlg" id="form" novalidate>
+    <div class="dlg-head"><h2 id="formTitle">新建球星卡</h2><button class="x" type="button" data-close aria-label="关闭">×</button></div>
+    <div class="row">
+      <label>姓名（必填）<input class="field" id="f-name" maxlength="24" autocomplete="off"></label>
+      <label>位置（必填）<select class="field" id="f-pos"></select></label>
+      <label>卡面<select class="field" id="f-tier">
+        <option value="auto">按总评自动</option><option value="bronze">铜卡</option><option value="silver">银卡</option><option value="gold">金卡</option>
+        <option value="onyx">黑金</option><option value="legend">传奇</option><option value="prism">闪耀</option></select></label>
+    </div>
+    <fieldset><legend>六项属性（1–99，必填）</legend>
+      <div class="row six" id="statRow"></div>
+    </fieldset>
+    <div class="row">
+      <label>总评（1–99，必填）<input class="field" id="f-ovr" type="number" min="1" max="99" inputmode="numeric"></label>
+      <label>&nbsp;<button class="btn" type="button" id="autoOvr">按属性估算总评</button></label>
+    </div>
+    <fieldset><legend>选填</legend>
+      <div class="row">
+        <label>国籍 / 地区<input class="field" id="f-nation" maxlength="8" placeholder="如 CHN、🇨🇳"></label>
+        <label>俱乐部 / 球队<input class="field" id="f-club" maxlength="16" placeholder="如 周四夜踢"></label>
+        <label>球衣号<input class="field" id="f-number" type="number" min="0" max="99" inputmode="numeric"></label>
+        <label>惯用脚<select class="field" id="f-foot"><option value="">未填</option><option>右脚</option><option>左脚</option><option>双脚</option></select></label>
+        <label>逆足（1–5 星）<input class="field" id="f-weak" type="number" min="1" max="5" inputmode="numeric"></label>
+        <label>花式（1–5 星）<input class="field" id="f-skill" type="number" min="1" max="5" inputmode="numeric"></label>
+        <label>身高 cm<input class="field" id="f-height" type="number" min="100" max="230" inputmode="numeric"></label>
+        <label>年龄<input class="field" id="f-age" type="number" min="5" max="80" inputmode="numeric"></label>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <label>照片（半身照，纯色背景最容易抠干净）<input class="field" id="f-photo" type="file" accept="image/*"></label>
+        <label>&nbsp;<button class="btn" type="button" id="clearPhoto">移除照片</button></label>
+      </div>
+      <div class="cut" id="cutBox" hidden>
+        <div class="pv"><img id="pvImg" alt="照片处理预览"></div>
+        <div class="cut-ctl">
+          <label>背景处理<select class="field" id="f-cut"><option value="auto">自动去掉背景</option><option value="keep">保留原图（卡面上做渐隐）</option></select></label>
+          <label id="tolWrap">去除力度<input id="f-tol" type="range" min="8" max="80" value="30"></label>
+          <p class="hint" id="cutMsg"></p>
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px"><label>备注<input class="field" id="f-note" maxlength="80" placeholder="一句话特点"></label></div>
+    </fieldset>
+    <div class="err" id="formErr" role="alert"></div>
+    <div class="acts"><button class="btn" type="button" data-close>取消</button><button class="btn primary" type="submit" id="saveBtn">保存</button></div>
+  </form>
+</dialog>
+
+<!-- 编辑口令 -->
+<dialog id="dCode">
+  <form class="dlg" id="codeForm" novalidate>
+    <div class="dlg-head"><h2>输入编辑口令</h2><button class="x" type="button" data-close aria-label="关闭">×</button></div>
+    <p class="hint">浏览不需要口令。新建、编辑、删除球员需要口令，问管理员要。这台设备输一次就会记住。</p>
+    <label>口令<input class="field" id="codeInput" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+    <div class="err" id="codeErr" role="alert"></div>
+    <div class="acts"><button class="btn" type="button" data-close>取消</button><button class="btn primary" type="submit" id="codeGo">确认</button></div>
+  </form>
+</dialog>
+
+<!-- 导入 / 导出 -->
+<dialog id="dIO">
+  <div class="dlg">
+    <div class="dlg-head"><h2 id="ioTitle">批量导入</h2><button class="x" type="button" data-close aria-label="关闭">×</button></div>
+    <p class="hint" id="ioHint"></p>
+    <textarea class="field" id="ioText" spellcheck="false" aria-label="数据"></textarea>
+    <div class="err" id="ioErr" role="alert"></div>
+    <div class="acts"><button class="btn" type="button" data-close>关闭</button><button class="btn primary" type="button" id="ioGo">导入</button></div>
+  </div>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+(function(){
+"use strict";
+const POS={GK:"门将",CB:"中后卫",LB:"左后卫",RB:"右后卫",LWB:"左翼卫",RWB:"右翼卫",CDM:"后腰",CM:"中场",CAM:"前腰",LM:"左中场",RM:"右中场",LW:"左边锋",RW:"右边锋",CF:"影锋",ST:"中锋"};
+const POS_ORDER=Object.keys(POS);
+const groupOf=p=>p==="GK"?"gk":["CB","LB","RB","LWB","RWB"].includes(p)?"def":["CDM","CM","CAM","LM","RM"].includes(p)?"mid":"att";
+const GROUPS=[["all","全部"],["att","前锋"],["mid","中场"],["def","后卫"],["gk","门将"]];
+const LABELS={out:["速度","射门","传球","盘带","防守","身体"],gk:["扑救","手型","开球","反应","速度","站位"]};
+const WEIGHTS={att:[.2,.3,.1,.25,.02,.13],mid:[.1,.15,.3,.25,.1,.1],def:[.12,.02,.1,.08,.43,.25],gk:[.24,.2,.1,.24,.04,.18]};
+const TIERS={bronze:"铜卡",silver:"银卡",gold:"金卡",onyx:"黑金",legend:"传奇",prism:"闪耀"};
+const CSV_HEAD="姓名,总评,位置,属性1,属性2,属性3,属性4,属性5,属性6,国籍,俱乐部,球衣号,惯用脚,逆足,花式,卡面";
+const EXAMPLES=[
+  {id:"ex1",name:"陈一鸣",ovr:91,pos:"ST",stats:[90,93,78,88,42,84],tier:"onyx",nation:"CHN",club:"周四夜踢",number:9,foot:"右脚",weak:4,skill:4,note:"禁区里只需要一脚"},
+  {id:"ex2",name:"林海",ovr:84,pos:"CM",stats:[74,76,88,85,72,77],tier:"auto",nation:"HKG",club:"红磡联",number:8,foot:"左脚",weak:3,skill:4},
+  {id:"ex3",name:"阿杰",ovr:79,pos:"RW",stats:[92,74,71,82,38,60],tier:"prism",nation:"CHN",club:"周四夜踢",number:7,foot:"右脚",weak:2,skill:5},
+  {id:"ex4",name:"周守正",ovr:72,pos:"GK",stats:[74,70,65,76,48,71],tier:"auto",nation:"CHN",club:"红磡联",number:1,foot:"右脚"},
+  {id:"ex5",name:"老郑",ovr:88,pos:"CB",stats:[62,45,70,60,90,89],tier:"legend",nation:"CHN",club:"元老队",number:5,foot:"右脚",weak:3,skill:2,note:"退役多年，站位还在"},
+  {id:"ex6",name:"小凯",ovr:61,pos:"LB",stats:[77,40,58,60,59,62],tier:"auto",nation:"CHN",club:"新人",number:23,foot:"左脚"}
+];
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+const int=(v,a,b)=>{const n=Math.round(Number(v));return Number.isFinite(n)&&String(v).trim()!==""?clamp(n,a,b):null};
+const tierOf=c=>TIERS[c.tier]?c.tier:(c.ovr>=75?"gold":c.ovr>=65?"silver":"bronze");
+const labelsOf=p=>p==="GK"?LABELS.gk:LABELS.out;
+const safePhoto=u=>typeof u==="string"&&/^data:image\/(png|jpeg|webp);base64,/.test(u)?u:"";
+
+const STYLES={blade:"锋刃",noir:"夜幕",holo:"镭射"};
+let style="blade";
+try{const v=localStorage.getItem("playercards.style");if(STYLES[v])style=v}catch(e){}
+let cards=[],mode="boot",sb=null,filter="all",editing=null,photoData="";
+const LS="playercards.v1";
+const loadLocal=()=>{try{const a=JSON.parse(localStorage.getItem(LS)||"[]");return Array.isArray(a)?a:[]}catch(e){return[]}};
+const saveLocal=()=>{try{localStorage.setItem(LS,JSON.stringify(cards))}catch(e){}};
+
+/* ---------- 卡面 ---------- */
+const SIL='<svg viewBox="0 0 100 110" aria-hidden="true"><circle cx="50" cy="30" r="21"/><path d="M8 110c0-30 18-48 42-48s42 18 42 48z"/></svg>';
+function nameSize(n){let u=0;for(const ch of n)u+=/[⺀-鿿＀-￯]/.test(ch)?1:.56;return Math.min(11,84/Math.max(u,1)).toFixed(2)}
+function stars(n){return n?"★".repeat(n)+"☆".repeat(5-n):""}
+function backHTML(c){
+  const L=labelsOf(c.pos),st=c.stats||[];
+  const meta=[c.club&&["球队",c.club],c.nation&&["国籍",c.nation],c.number!=null&&c.number!==""&&["号码","#"+c.number],c.foot&&["惯用脚",c.foot],
+    c.weak&&["逆足",stars(c.weak)],c.skill&&["花式",stars(c.skill)],c.height&&["身高",c.height+" cm"],c.age&&["年龄",c.age]].filter(Boolean);
+  return `<span class="card-back">
+  <span class="b-head"><span class="b-name">${esc(c.name)}</span><span class="b-ovr">${esc(c.ovr)}</span></span>
+  <span class="b-sub">${esc(c.pos)} · ${esc(POS[c.pos]||"")} · ${TIERS[tierOf(c)]}</span>
+  <span class="b-bars">${L.map((l,i)=>`<span><em>${l}</em><b>${esc(st[i]??"–")}</b><i style="--w:${clamp(Number(st[i])||0,0,99)}%"></i></span>`).join("")}</span>
+  ${meta.length?`<span class="b-meta">${meta.map(([k,v])=>`<span><em>${k}</em>${esc(v)}</span>`).join("")}</span>`:""}
+  ${c.note?`<span class="b-note">${esc(c.note)}</span>`:""}
+</span>`;
+}
+function cardHTML(c,tag,sty,back){
+  const L=labelsOf(c.pos),p=safePhoto(c.photo),st=Array.isArray(c.stats)?c.stats:[],hasNum=c.number!=null&&c.number!=="";
+  return `<${tag} class="card s-${sty||style} t-${tierOf(c)}" ${tag!=="button"?'tabindex="0" role="button" aria-label="翻面"':""} ${tag==="button"?`type="button" data-id="${esc(c.id)}" aria-label="${esc(c.name)}，总评 ${esc(c.ovr)}"`:""}>
+<span class="flip"><span class="card-in">
+  <span class="c-fx"></span>
+  <span class="c-ghost" aria-hidden="true">${esc(hasNum?c.number:c.pos)}</span>
+  <span class="c-photo">${p?`<img src="${p}" alt="">`:SIL}</span>
+  <span class="c-left"><span class="c-ovr">${esc(c.ovr)}</span><span class="c-pos">${esc(c.pos)}</span><span class="c-rule"></span>
+    ${c.nation?`<span class="c-tag">${esc(c.nation)}</span>`:""}${hasNum?`<span class="c-tag">#${esc(c.number)}</span>`:""}</span>
+  ${String(c.id).startsWith("ex")?'<span class="c-ex">示例</span>':""}
+  <span class="c-name" style="font-size:${nameSize(String(c.name||""))}cqw">${esc(c.name)}</span>
+  <span class="c-stats">${L.map((l,i)=>`<span><b>${esc(st[i]??"–")}</b><em>${l}</em></span>`).join("")}</span>
+  ${c.club?`<span class="c-club">${esc(c.club)}</span>`:""}
+  <span class="c-frame"></span>
+  <span class="sheen"></span>
+</span>${back?backHTML(c):""}</span></${tag}>`;
+}
+
+/* 照片没有透明背景时，卡面上改用铺满 + 渐隐 */
+const probe=document.createElement("canvas");probe.width=probe.height=16;
+function isOpaque(src){try{const x=probe.getContext("2d",{willReadFrequently:true});x.clearRect(0,0,16,16);x.drawImage(src,0,0,16,16);
+  const d=x.getImageData(0,0,16,1).data;return d[3]>245&&d[31]>245&&d[63]>245}catch(e){return false}}
+document.addEventListener("load",e=>{const t=e.target;if(t&&t.matches&&t.matches(".c-photo img"))t.parentNode.classList.toggle("frame",isOpaque(t))},true);
+
+/* 抠图：从上、左、右三条边向内扩散，去掉与边缘颜色接近且连续的区域 */
+function cutout(src,tol){
+  const w=src.width,h=src.height,cv=document.createElement("canvas");cv.width=w;cv.height=h;
+  const cx=cv.getContext("2d");cx.drawImage(src,0,0);const im=cx.getImageData(0,0,w,h),d=im.data,n=w*h;
+  let r=0,g=0,b=0,k=0;const add=i=>{r+=d[i*4];g+=d[i*4+1];b+=d[i*4+2];k++};
+  const side=Math.round(h*.6);
+  for(let x=0;x<w;x++)add(x);for(let y=0;y<side;y++){add(y*w);add(y*w+w-1)}
+  r/=k;g/=k;b/=k;
+  const T2=Math.pow(tol*2.2,2),S2=Math.pow(tol*.45,2),bg=new Uint8Array(n),q=new Int32Array(n);let qh=0,qt=0;
+  const near=i=>{const a=d[i*4]-r,c=d[i*4+1]-g,e=d[i*4+2]-b;return a*a+c*c+e*e<=T2};
+  const step=(i,j)=>{const a=d[i*4]-d[j*4],c=d[i*4+1]-d[j*4+1],e=d[i*4+2]-d[j*4+2];return a*a+c*c+e*e<=S2};
+  const seed=i=>{if(!bg[i]&&(d[i*4+3]<16||near(i))){bg[i]=1;q[qt++]=i}};
+  for(let x=0;x<w;x++)seed(x);for(let y=0;y<h;y++){seed(y*w);seed(y*w+w-1)}
+  const tryPx=(i,j)=>{if(!bg[j]&&(d[j*4+3]<16||(near(j)&&step(i,j)))){bg[j]=1;q[qt++]=j}};
+  while(qh<qt){const i=q[qh++],x=i%w,y=(i-x)/w;if(x>0)tryPx(i,i-1);if(x<w-1)tryPx(i,i+1);if(y>0)tryPx(i,i-w);if(y<h-1)tryPx(i,i+w)}
+  const frac=qt/n;if(frac<.08||frac>.93)return null;
+  let x0=w,y0=h,x1=-1,y1=-1;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=y*w+x;
+    if(bg[i]){d[i*4+3]=0;continue}
+    let c=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy;if(X<0||Y<0||X>=w||Y>=h||bg[Y*w+X])c++}
+    if(c)d[i*4+3]=Math.round(d[i*4+3]*(1-c/9));
+    if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
+  if(x1<x0)return null;
+  cx.putImageData(im,0,0);
+  const out=document.createElement("canvas");out.width=x1-x0+1;out.height=y1-y0+1;out.getContext("2d").drawImage(cv,x0,y0,out.width,out.height,0,0,out.width,out.height);
+  return out;
+}
+function encode(cv,alpha){
+  for(const s of[1,.75,.55,.4]){
+    let c=cv;if(s<1){c=document.createElement("canvas");c.width=Math.max(1,Math.round(cv.width*s));c.height=Math.max(1,Math.round(cv.height*s));c.getContext("2d").drawImage(cv,0,0,c.width,c.height)}
+    for(const q of[.86,.7,.55]){const u=c.toDataURL("image/webp",q);if(u.startsWith("data:image/webp")&&u.length<150000)return u}
+    const png=c.toDataURL("image/png");if(png.length<150000)return png;
+    if(!alpha)for(const q of[.8,.6]){const u=c.toDataURL("image/jpeg",q);if(u.length<150000)return u}
+  }
+  throw new Error("big");
+}
+function toCanvas(src,max){const sw=src.naturalWidth||src.width,sh=src.naturalHeight||src.height,s=Math.min(1,max/Math.max(sw,sh)),c=document.createElement("canvas");
+  c.width=Math.max(1,Math.round(sw*s));c.height=Math.max(1,Math.round(sh*s));c.getContext("2d").drawImage(src,0,0,c.width,c.height);return c}
+let srcCv=null,tolTimer=0;
+function applyPhoto(){
+  const box=$("cutBox"),msg=$("cutMsg");
+  if(!srcCv){box.hidden=true;return}
+  box.hidden=false;
+  const opaque=isOpaque(srcCv),want=$("f-cut").value==="auto";
+  $("tolWrap").hidden=!(opaque&&want);
+  let out=srcCv,cut=false;
+  if(!opaque){msg.textContent="这张图本身就是透明背景，直接使用。"}
+  else if(want){const c=cutout(srcCv,Number($("f-tol").value));
+    if(c){out=c;cut=true;msg.textContent="边缘没抠干净就把力度调大，人被吃掉了就调小。"}
+    else msg.textContent="这张图的背景太杂，自动抠不出来，先按原图渐隐显示。可以调力度再试，或换一张纯色背景的照片。"}
+  else msg.textContent="原图会铺满照片区域，左侧和底部渐隐融进卡面。";
+  try{photoData=encode(out,cut||!opaque);$("pvImg").src=photoData;$("formErr").textContent=""}
+  catch(e){$("formErr").textContent="这张图片太大，换一张试试。"}
+}
+
+/* ---------- 列表 ---------- */
+const shown=()=>cards.length?cards:EXAMPLES;
+function render(){
+  const all=shown(),q=$("q").value.trim().toLowerCase(),sort=$("sort").value;
+  let list=all.filter(c=>(filter==="all"||groupOf(c.pos)===filter)&&(!q||(c.name+" "+(c.club||"")+" "+(c.nation||"")).toLowerCase().includes(q)));
+  list=list.slice().sort((a,b)=>sort==="ovr"?b.ovr-a.ovr||String(a.name).localeCompare(b.name,"zh"):
+    sort==="new"?(b.createdAt||0)-(a.createdAt||0):sort==="name"?String(a.name).localeCompare(b.name,"zh"):
+    POS_ORDER.indexOf(a.pos)-POS_ORDER.indexOf(b.pos)||b.ovr-a.ovr);
+  $("grid").innerHTML=list.length?list.map(c=>cardHTML(c,"button")).join(""):'<p class="empty">没有符合条件的卡。换个筛选或清空搜索试试。</p>';
+  $("exNote").hidden=cards.length>0||mode==="boot";
+  const n=cards.length,avg=n?Math.round(cards.reduce((s,c)=>s+c.ovr,0)/n):"–",top=n?Math.max(...cards.map(c=>c.ovr)):"–";
+  $("sum").innerHTML=`<span><b>${n}</b>张</span><span><b>${avg}</b>平均总评</span><span><b>${top}</b>最高</span>`;
+  renderStatus();
+}
+function renderStatus(){
+  const el=$("status"),t=el.querySelector("span");el.className="status";
+  if(mode==="sync"){el.classList.add("ok");t.textContent="共享卡池已连接"+(editCode?"，可编辑":"，编辑需口令")}
+  else if(mode==="offline"){el.classList.add("local");t.textContent="连不上数据库，显示的是这台设备上次的缓存"}
+  else t.textContent="正在连接数据…";
+}
+$("chips").innerHTML=GROUPS.map(([k,l])=>`<button class="chip" type="button" data-g="${k}" aria-pressed="${k==="all"}">${l}</button>`).join("");
+$("chips").addEventListener("click",e=>{const b=e.target.closest("[data-g]");if(!b)return;filter=b.dataset.g;
+  document.querySelectorAll("#chips .chip").forEach(c=>c.setAttribute("aria-pressed",c===b));render()});
+function drawStyles(){$("styles").innerHTML=Object.entries(STYLES).map(([k,l])=>`<button class="chip" type="button" data-s="${k}" aria-pressed="${k===style}">${l}</button>`).join("")}
+drawStyles();
+$("styles").addEventListener("click",e=>{const b=e.target.closest("[data-s]");if(!b||b.dataset.s===style)return;style=b.dataset.s;
+  try{localStorage.setItem("playercards.style",style)}catch(x){}
+  drawStyles();render()});
+$("q").addEventListener("input",render);$("sort").addEventListener("change",render);
+
+/* 光泽与倾斜：只在有鼠标的设备上 */
+if(matchMedia("(hover:hover)").matches&&!matchMedia("(prefers-reduced-motion:reduce)").matches){
+  $("grid").addEventListener("pointermove",e=>{const c=e.target.closest(".card");if(!c)return;const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+    c.style.setProperty("--mx",x*100+"%");c.style.setProperty("--my",y*100+"%");c.style.setProperty("--ry",(x-.5)*12+"deg");c.style.setProperty("--rx",(.5-y)*10+"deg")});
+  $("grid").addEventListener("pointerout",e=>{const c=e.target.closest(".card");if(c&&!c.contains(e.relatedTarget)){c.style.setProperty("--rx","0deg");c.style.setProperty("--ry","0deg")}});
+}
+
+/* ---------- 存储 ---------- */
+function toast(msg){const t=document.createElement("div");t.className="toast";t.textContent=msg;(document.querySelector("dialog[open]")||document.body).appendChild(t);setTimeout(()=>t.remove(),3200)}
+function errText(e){const c=e&&e.code;return c==="bad_code"?"口令不对，请重新输入。":c==="bad_data"||c==="22023"?"数据太大，换一张小一点的照片试试。":c==="offline"?"连不上数据库，检查网络后再试。":"保存失败，请稍后再试。"}
+const bodyOf=c=>{const b={...c};delete b.id;delete b._local;return b};
+const CODE_KEY="playercards.code";
+let editCode="";try{editCode=localStorage.getItem(CODE_KEY)||""}catch(e){}
+function setCode(v){editCode=v;try{v?localStorage.setItem(CODE_KEY,v):localStorage.removeItem(CODE_KEY)}catch(e){}renderStatus()}
+function rpcErr(error){
+  const m=(error&&(error.message||"")).toLowerCase();
+  if(m.includes("bad_code")){setCode("");return{code:"bad_code"}}
+  if(m.includes("bad_data"))return{code:"bad_data"};
+  return{code:"offline"};
+}
+async function saveCard(c){
+  if(!sb)throw{code:"offline"};
+  const {data,error}=await sb.rpc("save_card",{p_code:editCode,p_id:c.id||null,p_data:bodyOf(c)});
+  if(error)throw rpcErr(error);
+  await refresh();return data;
+}
+async function removeCard(id){
+  if(!sb)throw{code:"offline"};
+  const {error}=await sb.rpc("delete_card",{p_code:editCode,p_id:id});
+  if(error)throw rpcErr(error);
+  await refresh();
+}
+async function refresh(){
+  const {data,error}=await sb.from("cards").select("id,data").order("created_at",{ascending:true});
+  if(error)throw error;
+  cards=data.map(r=>({...(r.data||{}),id:r.id}));
+  mode="sync";saveLocal();render();if($("dManage").open)drawManage();
+}
+let refTimer=0;
+async function boot(){
+  cards=loadLocal();render();
+  try{
+    sb=window.supabase.createClient("https://utdhuhgiizwyjyfovaty.supabase.co","sb_publishable_o_iU_c0NyA6lFsD13mlHWQ_dZOW1tDh");
+    await refresh();
+    sb.channel("cards").on("postgres_changes",{event:"*",schema:"public",table:"cards"},()=>{clearTimeout(refTimer);refTimer=setTimeout(()=>refresh().catch(()=>{}),400)}).subscribe();
+  }catch(e){mode="offline";render()}
+}
+
+/* 编辑入口需要口令 */
+let pendingBtn=null;
+document.addEventListener("click",e=>{
+  const b=e.target.closest("#addBtn,#importBtn,#manageBtn");
+  if(!b||editCode)return;
+  e.stopImmediatePropagation();e.preventDefault();pendingBtn=b;
+  $("codeInput").value="";$("codeErr").textContent="";$("codeGo").disabled=false;$("dCode").showModal();$("codeInput").focus();
+},true);
+$("codeForm").addEventListener("submit",async e=>{
+  e.preventDefault();const v=$("codeInput").value.trim();if(!v){$("codeErr").textContent="请输入口令。";return}
+  if(!sb){$("codeErr").textContent="连不上数据库，检查网络后再试。";return}
+  $("codeGo").disabled=true;
+  const {data,error}=await sb.rpc("check_code",{p_code:v});
+  $("codeGo").disabled=false;
+  if(error){$("codeErr").textContent="连不上数据库，检查网络后再试。";return}
+  if(!data){$("codeErr").textContent="口令不对。";return}
+  setCode(v);$("dCode").close();toast("口令正确，已解锁编辑");
+  const b=pendingBtn;pendingBtn=null;if(b)b.click();
+});
+
+/* ---------- 点卡片：放大并翻到背面 ---------- */
+function openFlip(c){
+  $("viewBody").innerHTML=cardHTML(c,"div",null,true)+'<p class="flip-hint">点卡片翻面 · 点空白处关闭</p>';
+  const card=$("viewBody").querySelector(".card");
+  card.addEventListener("click",()=>card.classList.toggle("flipped"));
+  card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();card.classList.toggle("flipped")}});
+  $("dView").showModal();
+  setTimeout(()=>card.classList.add("flipped"),260);
+}
+$("grid").addEventListener("click",e=>{const b=e.target.closest(".card[data-id]");if(!b)return;const c=shown().find(x=>String(x.id)===b.dataset.id);if(c)openFlip(c)});
+$("dView").addEventListener("click",e=>{if(!e.target.closest(".card"))$("dView").close()});
+
+/* ---------- 管理：编辑、复制、删除的统一入口 ---------- */
+function drawManage(){
+  const list=cards.slice().sort((a,b)=>b.ovr-a.ovr);
+  $("mList").innerHTML=list.length?list.map(c=>`<div class="mrow" data-id="${esc(c.id)}"><b>${esc(c.ovr)}</b>
+    <span class="who">${esc(c.name)}<small>${esc(c.pos)}${c.club?" · "+esc(c.club):""}</small></span>
+    <span class="ops"><button class="btn" type="button" data-op="edit">编辑</button><button class="btn" type="button" data-op="copy">复制</button><button class="btn danger" type="button" data-op="del">删除</button></span></div>`).join("")
+    :'<p class="hint">还没有自己的卡。点右下角「新建球星卡」，或用「批量导入」。</p>';
+}
+$("manageBtn").addEventListener("click",()=>{drawManage();$("dManage").showModal()});
+$("mAdd").addEventListener("click",()=>{$("dManage").close();openForm(null)});
+$("mList").addEventListener("click",async e=>{
+  const b=e.target.closest("[data-op]");if(!b)return;const c=cards.find(x=>String(x.id)===b.closest(".mrow").dataset.id);if(!c)return;
+  if(b.dataset.op==="edit"){$("dManage").close();openForm(c)}
+  else if(b.dataset.op==="copy"){$("dManage").close();openForm({...c,id:null})}
+  else if(!b.dataset.armed){b.dataset.armed="1";b.textContent="确认删除"}
+  else{b.disabled=true;try{await removeCard(c.id);drawManage();toast("已删除")}catch(x){b.disabled=false;toast(errText(x))}}
+});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-close]");if(b)b.closest("dialog").close()});
+
+/* ---------- 表单 ---------- */
+$("f-pos").innerHTML=POS_ORDER.map(p=>`<option value="${p}">${p} ${POS[p]}</option>`).join("");
+function drawStatInputs(vals){const L=labelsOf($("f-pos").value);
+  $("statRow").innerHTML=L.map((l,i)=>`<label><span>${l}</span><input class="field" id="f-s${i}" type="number" min="1" max="99" inputmode="numeric" value="${esc(vals&&vals[i]!=null?vals[i]:"")}"></label>`).join("")}
+const readStats=()=>[0,1,2,3,4,5].map(i=>int($("f-s"+i).value,1,99));
+$("f-pos").addEventListener("change",()=>drawStatInputs(readStats()));
+$("autoOvr").addEventListener("click",()=>{const s=readStats();if(s.some(v=>v==null)){$("formErr").textContent="先填完六项属性，再估算总评。";return}
+  const w=WEIGHTS[groupOf($("f-pos").value)];$("f-ovr").value=clamp(Math.round(s.reduce((a,v,i)=>a+v*w[i],0)),1,99);$("formErr").textContent=""});
+function openForm(c){
+  editing=c&&c.id?c:null;c=c||{};photoData=safePhoto(c.photo);
+  $("formTitle").textContent=editing?"编辑球星卡":"新建球星卡";
+  $("f-name").value=c.name||"";$("f-pos").value=POS[c.pos]?c.pos:"ST";$("f-tier").value=TIERS[c.tier]?c.tier:"auto";$("f-ovr").value=c.ovr||"";
+  drawStatInputs(c.stats);
+  for(const k of["nation","club","number","foot","weak","skill","height","age","note"])$("f-"+k).value=c[k]!=null?c[k]:"";
+  $("f-photo").value="";$("formErr").textContent="";$("saveBtn").disabled=false;
+  srcCv=null;$("cutBox").hidden=true;$("f-cut").value=c.cut==="keep"?"keep":"auto";$("f-tol").value=30;
+  if(photoData){const im=new Image();im.onload=()=>{srcCv=toCanvas(im,440);applyPhoto()};im.src=photoData}
+  $("dEdit").showModal();
+}
+$("f-photo").addEventListener("change",async e=>{const f=e.target.files[0];if(!f)return;
+  try{const bmp=await createImageBitmap(f);srcCv=toCanvas(bmp,440);$("f-tol").value=30;applyPhoto()}
+  catch(err){e.target.value="";$("formErr").textContent="这张图片读不了，换一张 JPG 或 PNG 试试。"}});
+$("f-cut").addEventListener("change",applyPhoto);
+$("f-tol").addEventListener("input",()=>{clearTimeout(tolTimer);tolTimer=setTimeout(applyPhoto,120)});
+$("clearPhoto").addEventListener("click",()=>{photoData="";srcCv=null;$("f-photo").value="";$("cutBox").hidden=true;toast("已移除照片，保存后生效")});
+$("form").addEventListener("submit",async e=>{
+  e.preventDefault();const err=$("formErr"),name=$("f-name").value.trim(),stats=readStats(),ovr=int($("f-ovr").value,1,99);
+  if(!name){err.textContent="请填写姓名。";$("f-name").focus();return}
+  if(stats.some(v=>v==null)){err.textContent="六项属性都要填，范围 1–99。";return}
+  if(ovr==null){err.textContent="请填写总评，或点「按属性估算总评」。";$("f-ovr").focus();return}
+  const c={name,ovr,pos:$("f-pos").value,stats,tier:$("f-tier").value,createdAt:editing?editing.createdAt||Date.now():Date.now()};
+  if(editing){c.id=editing.id}
+  const opt={nation:$("f-nation").value.trim(),club:$("f-club").value.trim(),foot:$("f-foot").value,note:$("f-note").value.trim(),
+    number:int($("f-number").value,0,99),weak:int($("f-weak").value,1,5),skill:int($("f-skill").value,1,5),height:int($("f-height").value,100,230),age:int($("f-age").value,5,80)};
+  for(const k in opt)if(opt[k]!==""&&opt[k]!=null)c[k]=opt[k];
+  if(photoData){c.photo=photoData;if($("f-cut").value==="keep")c.cut="keep"}
+  $("saveBtn").disabled=true;
+  try{await saveCard(c);$("dEdit").close();toast("已保存")}catch(ex){err.textContent=errText(ex)+(ex&&ex.code==="bad_code"?"关闭后重新点「新建」或「管理球员」输入口令。":"");$("saveBtn").disabled=false}
+});
+$("addBtn").addEventListener("click",()=>openForm(null));
+
+/* ---------- 导入 / 导出 ---------- */
+let ioMode="in";
+const TIER_BY_NAME=Object.fromEntries(Object.entries(TIERS).map(([k,v])=>[v,k]));
+function parseLines(text){
+  const out=[],bad=[];
+  text.split(/\r?\n/).forEach((line,n)=>{
+    if(!line.trim())return;const f=line.split(/\t|,|，/).map(s=>s.trim());
+    if(int(f[1],1,99)==null&&n===0)return; /* 表头 */
+    const pos=(f[2]||"").toUpperCase(),stats=f.slice(3,9).map(v=>int(v,1,99)),ovr=int(f[1],1,99);
+    if(!f[0]||ovr==null||!POS[pos]||stats.length<6||stats.some(v=>v==null)){bad.push(n+1);return}
+    const c={name:f[0].slice(0,24),ovr,pos,stats,tier:TIER_BY_NAME[f[15]]||(TIERS[f[15]]?f[15]:"auto"),createdAt:Date.now()+n};
+    if(f[9])c.nation=f[9].slice(0,8);if(f[10])c.club=f[10].slice(0,16);
+    const num=int(f[11],0,99),wk=int(f[13],1,5),sk=int(f[14],1,5);
+    if(num!=null)c.number=num;if(f[12])c.foot=f[12].slice(0,4);if(wk!=null)c.weak=wk;if(sk!=null)c.skill=sk;
+    out.push(c);
+  });
+  return{out,bad};
+}
+$("importBtn").addEventListener("click",()=>{ioMode="in";$("ioTitle").textContent="批量导入";$("ioGo").textContent="导入";$("ioErr").textContent="";
+  $("ioHint").textContent="每行一名球员，用逗号或 Tab 分隔（可以直接从表格里复制粘贴）。前 9 列必填，后面选填。位置用英文缩写，如 ST、CM、CB、GK。";
+  $("ioText").value=CSV_HEAD+"\n";$("ioText").readOnly=false;$("dIO").showModal()});
+$("exportBtn").addEventListener("click",()=>{ioMode="out";$("ioTitle").textContent="导出";$("ioGo").textContent="复制全部";$("ioErr").textContent="";
+  $("ioHint").textContent="复制下面的内容存到备忘录或表格里就是备份（不含照片）。以后可以用「批量导入」原样贴回来。";
+  $("ioText").value=[CSV_HEAD].concat(shown().map(c=>[c.name,c.ovr,c.pos,...(c.stats||[]),c.nation||"",c.club||"",c.number??"",c.foot||"",c.weak||"",c.skill||"",TIERS[c.tier]||""].join(","))).join("\n");
+  $("ioText").readOnly=true;$("dIO").showModal()});
+$("ioGo").addEventListener("click",async()=>{
+  const err=$("ioErr");
+  if(ioMode==="out"){try{await navigator.clipboard.writeText($("ioText").value);toast("已复制")}catch(e){$("ioText").select();err.textContent="自动复制没成功，内容已全选，请手动复制。"}return}
+  const{out,bad}=parseLines($("ioText").value);
+  if(!out.length){err.textContent=bad.length?`第 ${bad.join("、")} 行格式不对：检查位置缩写，以及总评和六项属性是否都是 1–99 的数字。`:"还没有可导入的行。";return}
+  $("ioGo").disabled=true;let ok=0;
+  try{for(const c of out){await saveCard(c);ok++}}catch(e){err.textContent=errText(e)}
+  $("ioGo").disabled=false;
+  if(ok===out.length){$("dIO").close();toast(`已导入 ${ok} 张`+(bad.length?`，跳过第 ${bad.join("、")} 行`:""))}
+});
+
+boot();
+})();
+</script>
+</body>
+</html>
