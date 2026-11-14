@@ -11,19 +11,18 @@ FC 风格的球星卡面板，一个静态页面，数据存在 Supabase，部�
 - Supabase 项目：`player-cards`（ap-southeast-1）
 - 表 `public.cards`：每行一张卡，`data` 字段是卡片 JSON；所有人可读
 - 表 `public.cards_history`：每次修改、删除前的旧版本，只有后台可见，用来恢复误删
-- 写入只能通过带口令的函数：`save_card`、`delete_card`，口令校验用 `check_code`
+- 表 `public.ratings`：评分，每人每张卡一票（主键 card_id + user_id），所有人可读
+- 卡面分数 = 所有人评分的平均；建卡时填的分数就是建卡人的那一票
+- 登录：Supabase Auth 邮箱验证码
+- 写入只能通过函数：`save_card`（新建 / 编辑，只有建卡人或管理员能改）、`delete_card`、`rate_card`；未登录不能调用
+- 管理员名单在 `private.admins`
 
-## 换编辑口令
-
-在 Supabase SQL Editor 里执行（把新口令换进去）：
+## 加管理员
 
 ```sql
-update private.settings
-set value = extensions.crypt('新口令', extensions.gen_salt('bf'))
-where key = 'edit_code';
+insert into private.admins(user_id)
+select id from auth.users where email = '对方邮箱';
 ```
-
-已经输过旧口令的设备，下次保存时会提示口令不对，重新输入即可。
 
 ## 恢复误删的卡
 
