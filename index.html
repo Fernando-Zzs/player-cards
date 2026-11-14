@@ -195,7 +195,7 @@ h1{font-size:26px;font-weight:900;margin:0;letter-spacing:.02em;text-wrap:balanc
 #dView::backdrop{background:rgba(6,8,14,.86)}
 .stage{width:min(80vw,340px);animation:pop .4s cubic-bezier(.2,.9,.3,1.2)}
 .stage .card{perspective:1100px;outline:none}
-.flip-hint{text-align:center;color:var(--mute);font-size:12.5px;margin:18px 0 0}
+.flip-hint{text-align:center;color:var(--mute);font-size:12.5px;margin:12px 0 0}
 @keyframes pop{from{transform:scale(.62);opacity:0}}
 .mlist{display:grid;max-height:60dvh;overflow:auto}
 .mrow{display:grid;grid-template-columns:2.4em 1fr auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
@@ -242,6 +242,17 @@ textarea.field{width:100%;min-height:150px;font-family:ui-monospace,Menlo,monosp
 .pv img{max-width:100%;max-height:100%;display:block}
 .cut-ctl{display:grid;gap:8px}
 input[type=range]{width:100%;accent-color:var(--whistle)}
+[hidden]{display:none!important}
+.acct{padding:5px 12px;font-size:13px;max-width:12em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.linkbtn{background:none;border:0;padding:0;color:var(--mute);font-size:12.5px;text-decoration:underline;cursor:pointer}
+.linkbtn:disabled{text-decoration:none;cursor:default;opacity:.7}
+.lg-links{display:flex;gap:16px;margin-top:8px}
+.vacts{display:flex;justify-content:center;gap:10px;margin-top:16px}
+.vacts .btn{padding:9px 22px}
+.rates{display:grid;gap:12px}
+.rrow{display:grid;grid-template-columns:3em 1fr 2.2em;align-items:center;gap:12px;font-size:14px}
+.rrow input{width:100%;accent-color:var(--whistle);height:28px}
+.rrow output{font:800 19px/1 var(--num);text-align:right;font-variant-numeric:tabular-nums}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--chalk);color:var(--night);padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;max-width:calc(100vw - 32px);z-index:99}
 @media(prefers-reduced-motion:reduce){.card{transition:none;transform:none}.sheen{transition:none}.card-in::after{animation:none!important}.flip{transition:none}.stage{animation:none}}
 </style>
@@ -252,6 +263,7 @@ input[type=range]{width:100%;accent-color:var(--whistle)}
     <h1>球星卡面板</h1>
     <div class="sum" id="sum"></div>
     <div class="status" id="status"><i></i><span>准备中</span></div>
+    <button class="btn acct" id="acctBtn" type="button">登录</button>
   </header>
 
   <div class="bar">
@@ -272,7 +284,7 @@ input[type=range]{width:100%;accent-color:var(--whistle)}
   </div>
 
   <div class="stylebar"><span>卡面风格</span><div class="chips" id="styles" role="group" aria-label="卡面风格"></div></div>
-  <div class="note" id="exNote" hidden><b>下面是示例卡。</b>添加第一张自己的卡后，示例会自动消失。点任意一张卡可以翻到背面看详细信息。</div>
+  <div class="note" id="exNote" hidden><b>下面是示例卡。</b>添加第一张自己的卡后，示例会自动消失。点任意一张卡可以翻到背面看详细信息，登录后可以建卡、给别人的卡打分。</div>
   <main class="grid" id="grid"></main>
 </div>
 
@@ -299,10 +311,12 @@ input[type=range]{width:100%;accent-color:var(--whistle)}
         <option value="auto">按总评自动</option><option value="bronze">铜卡</option><option value="silver">银卡</option><option value="gold">金卡</option>
         <option value="onyx">黑金</option><option value="legend">传奇</option><option value="prism">闪耀</option></select></label>
     </div>
-    <fieldset><legend>六项属性（1–99，必填）</legend>
+    <fieldset id="statBox"><legend>六项属性（1–99，必填）</legend>
       <div class="row six" id="statRow"></div>
+      <p class="hint" style="margin-top:8px">这是你的初始评分，算你的一票。之后大家打分会一起取平均。</p>
     </fieldset>
-    <div class="row">
+    <p class="hint" id="editHint" hidden>六项分数和总评由大家打分决定，这里只改资料。想改分数：打开卡片点「打分」改你自己那一票。</p>
+    <div class="row" id="ovrRow">
       <label>总评（1–99，必填）<input class="field" id="f-ovr" type="number" min="1" max="99" inputmode="numeric"></label>
       <label>&nbsp;<button class="btn" type="button" id="autoOvr">按属性估算总评</button></label>
     </div>
@@ -336,14 +350,33 @@ input[type=range]{width:100%;accent-color:var(--whistle)}
   </form>
 </dialog>
 
-<!-- 编辑口令 -->
-<dialog id="dCode">
-  <form class="dlg" id="codeForm" novalidate>
-    <div class="dlg-head"><h2>输入编辑口令</h2><button class="x" type="button" data-close aria-label="关闭">×</button></div>
-    <p class="hint">浏览不需要口令。新建、编辑、删除球员需要口令，问管理员要。这台设备输一次就会记住。</p>
-    <label>口令<input class="field" id="codeInput" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
-    <div class="err" id="codeErr" role="alert"></div>
-    <div class="acts"><button class="btn" type="button" data-close>取消</button><button class="btn primary" type="submit" id="codeGo">确认</button></div>
+<!-- 登录 -->
+<dialog id="dLogin">
+  <form class="dlg" id="loginForm" novalidate>
+    <div class="dlg-head"><h2 id="loginTitle">登录</h2><button class="x" type="button" data-close aria-label="关闭">×</button></div>
+    <div id="lgEmail">
+      <p class="hint">浏览不用登录。建卡和打分需要登录：输入邮箱收验证码，不用设密码，这台设备会一直保持登录。</p>
+      <label>邮箱<input class="field" id="emailInput" type="email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" style="width:100%"></label>
+    </div>
+    <div id="lgCode" hidden>
+      <p class="hint" id="codeHint"></p>
+      <label>验证码<input class="field" id="otpInput" inputmode="numeric" autocomplete="one-time-code" maxlength="10" style="width:100%;font-size:20px;letter-spacing:.2em"></label>
+      <div class="lg-links"><button class="linkbtn" type="button" id="resendBtn">重新发送</button><button class="linkbtn" type="button" id="changeEmail">换个邮箱</button></div>
+    </div>
+    <div id="lgMe" hidden><p class="hint" id="meHint"></p></div>
+    <div class="err" id="loginErr" role="alert"></div>
+    <div class="acts"><button class="btn" type="button" data-close>取消</button><button class="btn primary" type="submit" id="loginGo">发送验证码</button></div>
+  </form>
+</dialog>
+
+<!-- 打分 -->
+<dialog id="dRate">
+  <form class="dlg" id="rateForm" novalidate>
+    <div class="dlg-head"><h2 id="rateTitle">打分</h2><button class="x" type="button" data-close aria-label="关闭">×</button></div>
+    <p class="hint" id="rateHint"></p>
+    <div class="rates" id="rateRows"></div>
+    <div class="err" id="rateErr" role="alert"></div>
+    <div class="acts"><button class="btn" type="button" data-close>取消</button><button class="btn primary" type="submit" id="rateGo">提交评分</button></div>
   </form>
 </dialog>
 
@@ -405,7 +438,7 @@ function backHTML(c){
     c.weak&&["逆足",stars(c.weak)],c.skill&&["花式",stars(c.skill)],c.height&&["身高",c.height+" cm"],c.age&&["年龄",c.age]].filter(Boolean);
   return `<span class="card-back"><span class="b-inner">
   <span class="b-head"><span class="b-name">${esc(c.name)}</span><span class="b-ovr">${esc(c.ovr)}</span></span>
-  <span class="b-sub">${esc(c.pos)} · ${esc(POS[c.pos]||"")} · ${TIERS[tierOf(c)]}</span>
+  <span class="b-sub">${esc(c.pos)} · ${esc(POS[c.pos]||"")} · ${TIERS[tierOf(c)]}${c.n?` · ${c.n}人评分`:""}</span>
   <span class="b-bars">${L.map((l,i)=>`<span><em>${l}</em><b>${esc(st[i]??"–")}</b><i style="--w:${clamp(Number(st[i])||0,0,99)}%"></i></span>`).join("")}</span>
   ${meta.length?`<span class="b-meta">${meta.map(([k,v])=>`<span${k==="球队"?' class="wide"':""}><em>${k}</em>${esc(v)}</span>`).join("")}</span>`:""}
   ${c.note?`<span class="b-note">${esc(c.note)}</span>`:""}
@@ -506,9 +539,10 @@ function render(){
 }
 function renderStatus(){
   const el=$("status"),t=el.querySelector("span");el.className="status";
-  if(mode==="sync"){el.classList.add("ok");t.textContent="共享卡池已连接"+(editCode?"，可编辑":"，编辑需口令")}
+  if(mode==="sync"){el.classList.add("ok");t.textContent="共享卡池已连接"+(user?"":"，登录后可建卡和打分")}
   else if(mode==="offline"){el.classList.add("local");t.textContent="连不上数据库，显示的是这台设备上次的缓存"}
   else t.textContent="正在连接数据…";
+  $("acctBtn").textContent=user?(user.email||"我").split("@")[0]+(isAdmin?" · 管理员":""):"登录";
 }
 $("chips").innerHTML=GROUPS.map(([k,l])=>`<button class="chip" type="button" data-g="${k}" aria-pressed="${k==="all"}">${l}</button>`).join("");
 $("chips").addEventListener("click",e=>{const b=e.target.closest("[data-g]");if(!b)return;filter=b.dataset.g;
@@ -529,63 +563,141 @@ if(matchMedia("(hover:hover)").matches&&!matchMedia("(prefers-reduced-motion:red
 
 /* ---------- 存储 ---------- */
 function toast(msg){const t=document.createElement("div");t.className="toast";t.textContent=msg;(document.querySelector("dialog[open]")||document.body).appendChild(t);setTimeout(()=>t.remove(),3200)}
-function errText(e){const c=e&&e.code;return c==="bad_code"?"口令不对，请重新输入。":c==="bad_data"||c==="22023"?"数据太大，换一张小一点的照片试试。":c==="offline"?"连不上数据库，检查网络后再试。":"保存失败，请稍后再试。"}
-const bodyOf=c=>{const b={...c};delete b.id;delete b._local;return b};
-const CODE_KEY="playercards.code";
-let editCode="";try{editCode=localStorage.getItem(CODE_KEY)||""}catch(e){}
-function setCode(v){editCode=v;try{v?localStorage.setItem(CODE_KEY,v):localStorage.removeItem(CODE_KEY)}catch(e){}renderStatus()}
+function errText(e){const c=e&&e.code;return c==="auth"?"登录已失效，请重新登录。":c==="forbidden"?"只有建卡人和管理员能改这张卡。":c==="not_found"?"这张卡已经被删除了。":
+  c==="bad_data"?"数据不对或太大（照片太大就换一张小一点的）。":c==="offline"?"连不上数据库，检查网络后再试。":"保存失败，请稍后再试。"}
+const bodyOf=c=>{const b={...c};for(const k of["id","_local","owner","baseStats","baseOvr","n","mine"])delete b[k];return b};
+let user=null,isAdmin=false,raw=null,ratings=[];
+const canEdit=c=>!!(user&&c&&!String(c.id).startsWith("ex")&&(isAdmin||c.owner===user.id));
 function rpcErr(error){
-  const m=(error&&(error.message||"")).toLowerCase();
-  if(m.includes("bad_code")){setCode("");return{code:"bad_code"}}
-  if(m.includes("bad_data"))return{code:"bad_data"};
+  const m=((error&&error.message)||"").toLowerCase();
+  if(m.includes("not_signed_in")||m.includes("jwt"))return{code:"auth"};
+  if(m.includes("forbidden"))return{code:"forbidden"};
+  if(m.includes("not_found"))return{code:"not_found"};
+  if(m.includes("bad_data")||m.includes("bad_stats"))return{code:"bad_data"};
   return{code:"offline"};
 }
-async function saveCard(c){
-  if(!sb)throw{code:"offline"};
-  const {data,error}=await sb.rpc("save_card",{p_code:editCode,p_id:c.id||null,p_data:bodyOf(c)});
-  if(error)throw rpcErr(error);
-  await refresh();return data;
-}
-async function removeCard(id){
-  if(!sb)throw{code:"offline"};
-  const {error}=await sb.rpc("delete_card",{p_code:editCode,p_id:id});
-  if(error)throw rpcErr(error);
-  await refresh();
-}
+async function call(fn,args){if(!sb)throw{code:"offline"};const {data,error}=await sb.rpc(fn,args);if(error)throw rpcErr(error);return data}
+async function saveCard(c){const id=await call("save_card",{p_id:c.id||null,p_data:bodyOf(c)});await refresh();return id}
+async function removeCard(id){await call("delete_card",{p_id:id});await refresh()}
+async function rateCard(id,stats){await call("rate_card",{p_card:id,p_stats:stats});await refresh()}
 async function refresh(){
-  const {data,error}=await sb.from("cards").select("id,data").order("created_at",{ascending:true});
-  if(error)throw error;
-  cards=data.map(r=>({...(r.data||{}),id:r.id}));
-  mode="sync";saveLocal();render();if($("dManage").open)drawManage();
+  const [a,b]=await Promise.all([sb.from("cards").select("id,data,owner").order("created_at",{ascending:true}),sb.from("ratings").select("card_id,user_id,stats")]);
+  if(a.error)throw a.error;if(b.error)throw b.error;
+  raw=a.data;ratings=b.data;mode="sync";compose();
+}
+/* 卡面分数 = 所有人评分的平均；总评在建卡人填的总评基础上，按位置权重随平均分浮动 */
+function compose(){
+  if(!raw)return;
+  const by={},uid=user&&user.id;for(const r of ratings)(by[r.card_id]=by[r.card_id]||[]).push(r);
+  cards=raw.map(r=>{
+    const d=r.data||{},base=Array.isArray(d.stats)?d.stats:[],rs=by[r.id]||[];
+    const c={...d,id:r.id,owner:r.owner,baseStats:base,baseOvr:d.ovr,n:rs.length,mine:null};
+    const m=uid&&rs.find(x=>x.user_id===uid);if(m)c.mine=m.stats;
+    if(rs.length&&base.length===6){
+      const avg=[0,1,2,3,4,5].map(i=>Math.round(rs.reduce((t,x)=>t+Number(x.stats[i]),0)/rs.length));
+      const w=WEIGHTS[groupOf(d.pos)]||WEIGHTS.mid,W=s=>s.reduce((t,v,i)=>t+Number(v)*w[i],0);
+      c.stats=avg;c.ovr=clamp(Math.round(Number(d.ovr)+W(avg)-W(base)),1,99);
+    }
+    return c});
+  saveLocal();render();if($("dManage").open)drawManage();
+  if($("dView").open&&viewId){const c=cards.find(x=>x.id===viewId);if(c)openFlip(c,true)}
 }
 let refTimer=0;
 async function boot(){
   cards=loadLocal();render();
   try{
     sb=window.supabase.createClient("https://utdhuhgiizwyjyfovaty.supabase.co","sb_publishable_o_iU_c0NyA6lFsD13mlHWQ_dZOW1tDh");
+    sb.auth.onAuthStateChange((ev,session)=>{
+      const u=session&&session.user||null;if((u&&u.id)===(user&&user.id)){user=u;return}
+      user=u;isAdmin=false;compose();renderStatus();
+      if(user)setTimeout(()=>sb.rpc("am_i_admin").then(({data})=>{isAdmin=!!data;compose();renderStatus()}),0);
+    });
     await refresh();
-    sb.channel("cards").on("postgres_changes",{event:"*",schema:"public",table:"cards"},()=>{clearTimeout(refTimer);refTimer=setTimeout(()=>refresh().catch(()=>{}),400)}).subscribe();
+    const kick=()=>{clearTimeout(refTimer);refTimer=setTimeout(()=>refresh().catch(()=>{}),300)};
+    sb.channel("pool").on("postgres_changes",{event:"*",schema:"public",table:"cards"},kick)
+      .on("postgres_changes",{event:"*",schema:"public",table:"ratings"},kick).subscribe();
   }catch(e){mode="offline";render()}
 }
 
-/* 编辑入口需要口令 */
-let pendingBtn=null;
+/* ---------- 登录：邮箱验证码 ---------- */
+let lgStep="email",lgEmail="",sentAt=0,afterLogin=null,resendTimer=0;
+function openLogin(next){
+  afterLogin=next||null;
+  lgStep=user?"me":(lgEmail&&Date.now()-sentAt<6e5?"code":"email");
+  drawLogin();if(!$("dLogin").open)$("dLogin").showModal();
+  (lgStep==="email"?$("emailInput"):lgStep==="code"?$("otpInput"):$("loginGo")).focus();
+}
+function drawLogin(){
+  $("lgEmail").hidden=lgStep!=="email";$("lgCode").hidden=lgStep!=="code";$("lgMe").hidden=lgStep!=="me";
+  $("loginTitle").textContent=lgStep==="me"?"账号":"登录";
+  const go=$("loginGo");go.disabled=false;go.textContent=lgStep==="email"?"发送验证码":lgStep==="code"?"登录":"退出登录";go.className="btn "+(lgStep==="me"?"danger":"primary");
+  if(lgStep==="code")$("codeHint").textContent=`验证码已发到 ${lgEmail}，几分钟内有效。没收到的话看看垃圾邮件。`;
+  if(lgStep==="me")$("meHint").textContent=`已登录：${user.email||""}${isAdmin?"（管理员）":""}`;
+  $("loginErr").textContent="";tickResend();
+}
+function tickResend(){clearTimeout(resendTimer);const b=$("resendBtn"),left=Math.ceil((sentAt+60000-Date.now())/1000);
+  if(left>0){b.disabled=true;b.textContent=`重新发送（${left}s）`;resendTimer=setTimeout(tickResend,1000)}else{b.disabled=false;b.textContent="重新发送"}}
+function authErr(error){
+  const m=((error&&error.message)||"").toLowerCase(),c=(error&&error.code)||"";
+  if(c==="email_address_not_authorized"||m.includes("not authorized"))return"邮件服务还没开通，请告诉管理员配置发信。";
+  if(c==="over_email_send_rate_limit"||m.includes("rate limit"))return"发送太频繁了，过一会儿再试。";
+  if(m.includes("after")&&m.includes("second"))return"刚发过，等一分钟再重新发送。";
+  if(m.includes("invalid")&&m.includes("email"))return"邮箱格式不对。";
+  return"发送失败，请稍后再试。";
+}
+async function sendCode(email){
+  const {error}=await sb.auth.signInWithOtp({email,options:{shouldCreateUser:true,emailRedirectTo:location.origin+location.pathname}});
+  if(error)throw error;lgEmail=email;sentAt=Date.now();
+}
+$("loginForm").addEventListener("submit",async e=>{
+  e.preventDefault();const err=$("loginErr"),go=$("loginGo");err.textContent="";
+  if(!sb){err.textContent="连不上数据库，检查网络后再试。";return}
+  if(lgStep==="email"){
+    const email=$("emailInput").value.trim().toLowerCase();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){err.textContent="请输入正确的邮箱。";return}
+    go.disabled=true;
+    try{await sendCode(email);lgStep="code";$("otpInput").value="";drawLogin();$("otpInput").focus()}
+    catch(x){err.textContent=authErr(x);go.disabled=false}
+  }else if(lgStep==="code"){
+    const token=$("otpInput").value.replace(/\D/g,"");
+    if(!/^\d{6,10}$/.test(token)){err.textContent="请输入邮件里的数字验证码。";return}
+    go.disabled=true;
+    const {error}=await sb.auth.verifyOtp({email:lgEmail,token,type:"email"});
+    if(error){err.textContent="验证码不对或已过期，可以重新发送一个。";go.disabled=false;return}
+    lgEmail="";sentAt=0;$("dLogin").close();toast("已登录");
+    const f=afterLogin;afterLogin=null;if(f)setTimeout(f,50);
+  }else{
+    go.disabled=true;await sb.auth.signOut().catch(()=>{});user=null;isAdmin=false;compose();renderStatus();$("dLogin").close();toast("已退出登录");
+  }
+});
+$("resendBtn").addEventListener("click",async()=>{if(!lgEmail)return;$("loginErr").textContent="";
+  try{await sendCode(lgEmail);tickResend();toast("已重新发送")}catch(x){$("loginErr").textContent=authErr(x)}});
+$("changeEmail").addEventListener("click",()=>{lgEmail="";sentAt=0;lgStep="email";drawLogin();$("emailInput").focus()});
+$("acctBtn").addEventListener("click",()=>openLogin(null));
+/* 建卡、导入、管理需要先登录，登录后自动继续 */
 document.addEventListener("click",e=>{
   const b=e.target.closest("#addBtn,#importBtn,#manageBtn");
-  if(!b||editCode)return;
-  e.stopImmediatePropagation();e.preventDefault();pendingBtn=b;
-  $("codeInput").value="";$("codeErr").textContent="";$("codeGo").disabled=false;$("dCode").showModal();$("codeInput").focus();
+  if(!b||user)return;
+  e.stopImmediatePropagation();e.preventDefault();openLogin(()=>b.click());
 },true);
-$("codeForm").addEventListener("submit",async e=>{
-  e.preventDefault();const v=$("codeInput").value.trim();if(!v){$("codeErr").textContent="请输入口令。";return}
-  if(!sb){$("codeErr").textContent="连不上数据库，检查网络后再试。";return}
-  $("codeGo").disabled=true;
-  const {data,error}=await sb.rpc("check_code",{p_code:v});
-  $("codeGo").disabled=false;
-  if(error){$("codeErr").textContent="连不上数据库，检查网络后再试。";return}
-  if(!data){$("codeErr").textContent="口令不对。";return}
-  setCode(v);$("dCode").close();toast("口令正确，已解锁编辑");
-  const b=pendingBtn;pendingBtn=null;if(b)b.click();
+
+/* ---------- 打分 ---------- */
+let rateId=null;
+function openRate(c){
+  rateId=c.id;const L=labelsOf(c.pos),v=c.mine||c.stats||[];
+  $("rateTitle").textContent=`给 ${c.name} 打分`;
+  $("rateHint").textContent=c.mine?`你已经打过分，改完会覆盖你原来那一票。现在 ${c.n} 人评分。`:`每人一票，和大家的分数取平均。现在 ${c.n||0} 人评分。`;
+  $("rateRows").innerHTML=L.map((l,i)=>{const x=clamp(Number(v[i])||60,1,99);return `<label class="rrow"><span>${l}</span><input type="range" min="1" max="99" value="${x}" data-i="${i}" aria-label="${l}"><output>${x}</output></label>`}).join("");
+  $("rateErr").textContent="";$("rateGo").disabled=false;$("rateGo").textContent=c.mine?"保存修改":"提交评分";
+  $("dRate").showModal();
+}
+$("rateRows").addEventListener("input",e=>{const r=e.target.closest("input[type=range]");if(r)r.nextElementSibling.textContent=r.value});
+$("rateForm").addEventListener("submit",async e=>{
+  e.preventDefault();const stats=[...$("rateRows").querySelectorAll("input[type=range]")].map(r=>int(r.value,1,99));
+  if(stats.length!==6||stats.some(v=>v==null)){$("rateErr").textContent="六项都要打分。";return}
+  $("rateGo").disabled=true;
+  try{await rateCard(rateId,stats);$("dRate").close();toast("评分已提交")}
+  catch(x){$("rateErr").textContent=x&&x.code==="auth"?"登录已失效，关掉后重新登录。":errText(x);$("rateGo").disabled=false}
 });
 
 /* ---------- 点卡片：放大并翻到背面 ---------- */
@@ -597,32 +709,42 @@ function fitBack(card){
   const need=inner.scrollHeight;
   if(need>avail){const k=Math.max(.6,avail/need);inner.style.transform=`scale(${k})`;inner.style.width=(100/k)+"%"}
 }
-function openFlip(c){
-  $("viewBody").innerHTML=cardHTML(c,"div",null,true)+'<p class="flip-hint">点卡片翻面 · 点空白处关闭</p>';
+let viewId=null;
+function openFlip(c,refresh){
+  const prev=$("viewBody").querySelector(".card"),keep=refresh&&prev&&prev.classList.contains("flipped");
+  viewId=c.id;const ex=String(c.id).startsWith("ex");
+  $("viewBody").innerHTML=cardHTML(c,"div",null,true)+(ex?"":`<div class="vacts"><button class="btn primary" type="button" id="rateBtn">${c.mine?"修改我的评分":"打分"}</button></div>`)+'<p class="flip-hint">点卡片翻面 · 点空白处关闭</p>';
   const card=$("viewBody").querySelector(".card");
   card.addEventListener("click",()=>card.classList.toggle("flipped"));
   card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();card.classList.toggle("flipped")}});
+  if(refresh){if(keep)card.classList.add("flipped");fitBack(card);return}
   $("dView").showModal();
   fitBack(card);if(document.fonts)document.fonts.ready.then(()=>fitBack(card));
   setTimeout(()=>card.classList.add("flipped"),260);
 }
+$("viewBody").addEventListener("click",e=>{
+  if(!e.target.closest("#rateBtn"))return;const c=cards.find(x=>x.id===viewId);if(!c)return;
+  if(!user){openLogin(()=>{const c2=cards.find(x=>x.id===viewId);if(c2)openRate(c2)});return}
+  openRate(c);
+});
 $("grid").addEventListener("click",e=>{const b=e.target.closest(".card[data-id]");if(!b)return;const c=shown().find(x=>String(x.id)===b.dataset.id);if(c)openFlip(c)});
-$("dView").addEventListener("click",e=>{if(!e.target.closest(".card"))$("dView").close()});
+$("dView").addEventListener("click",e=>{if(!e.target.closest(".card,.vacts"))$("dView").close()});
+$("dView").addEventListener("close",()=>{viewId=null});
 
 /* ---------- 管理：编辑、复制、删除的统一入口 ---------- */
 function drawManage(){
-  const list=cards.slice().sort((a,b)=>b.ovr-a.ovr);
+  const list=cards.filter(canEdit).sort((a,b)=>b.ovr-a.ovr);
   $("mList").innerHTML=list.length?list.map(c=>`<div class="mrow" data-id="${esc(c.id)}"><b>${esc(c.ovr)}</b>
     <span class="who">${esc(c.name)}<small>${esc(c.pos)}${c.club?" · "+esc(c.club):""}</small></span>
     <span class="ops"><button class="btn" type="button" data-op="edit">编辑</button><button class="btn" type="button" data-op="copy">复制</button><button class="btn danger" type="button" data-op="del">删除</button></span></div>`).join("")
-    :'<p class="hint">还没有自己的卡。点右下角「新建球星卡」，或用「批量导入」。</p>';
+    :'<p class="hint">你还没有自己建的卡。点「新建球星卡」或用「批量导入」。别人建的卡只能打分，资料由建卡人维护。</p>';
 }
 $("manageBtn").addEventListener("click",()=>{drawManage();$("dManage").showModal()});
 $("mAdd").addEventListener("click",()=>{$("dManage").close();openForm(null)});
 $("mList").addEventListener("click",async e=>{
   const b=e.target.closest("[data-op]");if(!b)return;const c=cards.find(x=>String(x.id)===b.closest(".mrow").dataset.id);if(!c)return;
   if(b.dataset.op==="edit"){$("dManage").close();openForm(c)}
-  else if(b.dataset.op==="copy"){$("dManage").close();openForm({...c,id:null})}
+  else if(b.dataset.op==="copy"){$("dManage").close();openForm({...c,id:null,stats:c.mine||c.stats})}
   else if(!b.dataset.armed){b.dataset.armed="1";b.textContent="确认删除"}
   else{b.disabled=true;try{await removeCard(c.id);drawManage();toast("已删除")}catch(x){b.disabled=false;toast(errText(x))}}
 });
@@ -638,7 +760,8 @@ $("autoOvr").addEventListener("click",()=>{const s=readStats();if(s.some(v=>v==n
   const w=WEIGHTS[groupOf($("f-pos").value)];$("f-ovr").value=clamp(Math.round(s.reduce((a,v,i)=>a+v*w[i],0)),1,99);$("formErr").textContent=""});
 function openForm(c){
   editing=c&&c.id?c:null;c=c||{};photoData=safePhoto(c.photo);
-  $("formTitle").textContent=editing?"编辑球星卡":"新建球星卡";
+  $("formTitle").textContent=editing?"编辑球星卡资料":"新建球星卡";
+  $("statBox").hidden=!!editing;$("ovrRow").hidden=!!editing;$("editHint").hidden=!editing;
   $("f-name").value=c.name||"";$("f-pos").value=POS[c.pos]?c.pos:"ST";$("f-tier").value=TIERS[c.tier]?c.tier:"auto";$("f-ovr").value=c.ovr||"";
   drawStatInputs(c.stats);
   for(const k of["nation","club","number","foot","weak","skill","height","age","note"])$("f-"+k).value=c[k]!=null?c[k]:"";
@@ -654,7 +777,8 @@ $("f-cut").addEventListener("change",applyPhoto);
 $("f-tol").addEventListener("input",()=>{clearTimeout(tolTimer);tolTimer=setTimeout(applyPhoto,120)});
 $("clearPhoto").addEventListener("click",()=>{photoData="";srcCv=null;$("f-photo").value="";$("cutBox").hidden=true;toast("已移除照片，保存后生效")});
 $("form").addEventListener("submit",async e=>{
-  e.preventDefault();const err=$("formErr"),name=$("f-name").value.trim(),stats=readStats(),ovr=int($("f-ovr").value,1,99);
+  e.preventDefault();const err=$("formErr"),name=$("f-name").value.trim();
+  const stats=editing?(editing.baseStats||editing.stats):readStats(),ovr=editing?int(editing.baseOvr??editing.ovr,1,99):int($("f-ovr").value,1,99);
   if(!name){err.textContent="请填写姓名。";$("f-name").focus();return}
   if(stats.some(v=>v==null)){err.textContent="六项属性都要填，范围 1–99。";return}
   if(ovr==null){err.textContent="请填写总评，或点「按属性估算总评」。";$("f-ovr").focus();return}
@@ -665,7 +789,7 @@ $("form").addEventListener("submit",async e=>{
   for(const k in opt)if(opt[k]!==""&&opt[k]!=null)c[k]=opt[k];
   if(photoData){c.photo=photoData;if($("f-cut").value==="keep")c.cut="keep"}
   $("saveBtn").disabled=true;
-  try{await saveCard(c);$("dEdit").close();toast("已保存")}catch(ex){err.textContent=errText(ex)+(ex&&ex.code==="bad_code"?"关闭后重新点「新建」或「管理球员」输入口令。":"");$("saveBtn").disabled=false}
+  try{await saveCard(c);$("dEdit").close();toast("已保存")}catch(ex){err.textContent=errText(ex);$("saveBtn").disabled=false}
 });
 $("addBtn").addEventListener("click",()=>openForm(null));
 
