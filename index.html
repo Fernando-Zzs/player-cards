@@ -189,6 +189,9 @@ h1{font-size:26px;font-weight:900;margin:0;letter-spacing:.02em;text-wrap:balanc
 .b-meta span{display:flex;justify-content:space-between;gap:2cqw;white-space:nowrap;overflow:hidden}
 .b-meta em{font-style:normal;opacity:.6}
 .b-meta .wide{grid-column:1/-1}
+.b-career{display:grid;grid-template-columns:repeat(4,1fr);text-align:center;border-top:.4cqw solid rgba(255,255,255,.14);padding-top:2cqw}
+.b-career b{display:block;font:800 7.4cqw/1 var(--num);color:var(--glow)}
+.b-career em{font-style:normal;font-size:4.2cqw;opacity:.7}
 .b-note{font-size:4.5cqw;line-height:1.4;opacity:.82;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
 #dView{background:none;border:0;padding:0;width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;overflow:hidden}
 #dView[open]{display:grid;place-items:center}
@@ -253,6 +256,59 @@ input[type=range]{width:100%;accent-color:var(--whistle)}
 .rrow{display:grid;grid-template-columns:3em 1fr 2.2em;align-items:center;gap:12px;font-size:14px}
 .rrow input{width:100%;accent-color:var(--whistle);height:28px}
 .rrow output{font:800 19px/1 var(--num);text-align:right;font-variant-numeric:tabular-nums}
+.tabs{display:flex;gap:4px;margin:0 0 16px;border-bottom:1px solid var(--line)}
+.tab{background:none;border:0;border-bottom:2px solid transparent;padding:8px 14px;margin-bottom:-1px;color:var(--mute);font-weight:700;font-size:15px;cursor:pointer}
+.tab[aria-pressed="true"]{color:var(--chalk);border-bottom-color:var(--whistle)}
+.vacts .btn{padding:9px 14px;font-size:14px}
+.boards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.board{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0}
+.board h3{margin:0 0 6px;font-size:13px;color:var(--mute);font-weight:700}
+.board ol{margin:0;padding:0;list-style:none;display:grid;gap:3px}
+.board li{display:flex;gap:6px;align-items:baseline;font-size:13.5px;min-width:0}
+.board li span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.board li b{font:800 17px/1 var(--num);color:var(--warn)}
+.board li i{font-style:normal;color:var(--mute);font-size:12px;width:1.1em}
+.matches{display:grid;gap:12px}
+.match{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;gap:8px}
+.mh{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+.mh b{font-size:15px}
+.mh small{color:var(--mute);font-size:12.5px}
+.mvpline{font-size:13px;color:var(--warn);font-weight:700}
+.pcs{display:flex;flex-wrap:wrap;gap:6px}
+.pc{border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:13px;white-space:nowrap}
+.pc b{font-family:var(--num);font-size:15px;color:var(--warn);margin:0 1px 0 4px}
+.pc.mvp{border-color:var(--warn)}
+.ma{display:flex;gap:8px;flex-wrap:wrap}
+.ma .btn{padding:5px 12px;font-size:13px}
+.mp-list{display:grid;gap:2px;max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:4px 10px}
+.mp{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:5px 0;border-bottom:1px solid var(--line)}
+.mp:last-child{border-bottom:0}
+.mp-head{color:var(--mute);font-size:12px;padding:4px 0}
+.mp .mp-who{display:flex;flex-direction:row;align-items:center;gap:8px;min-width:0;cursor:pointer;font-size:14.5px;color:var(--chalk)}
+.mp-who span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mp-who small{color:var(--mute)}
+.mp-who input{width:18px;height:18px;accent-color:var(--whistle);flex:none}
+.step{display:flex;align-items:center;gap:2px}
+.step button{width:28px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--night);cursor:pointer;font-size:16px;line-height:1}
+.step b{font:800 18px/1 var(--num);width:1.6em;text-align:center}
+.mp:not(.on) .step{opacity:.25;pointer-events:none}
+.vote-list{display:grid;gap:6px}
+.vote{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 10px;cursor:pointer;position:relative;overflow:hidden}
+.vote input{accent-color:var(--whistle);width:18px;height:18px}
+.vote i{position:absolute;left:0;top:0;bottom:0;background:color-mix(in srgb,var(--warn) 16%,transparent);width:var(--w);z-index:-1}
+.vote b{font:800 17px/1 var(--num)}
+.vote{isolation:isolate;font-size:14.5px;color:var(--chalk)}
+a.btn{text-decoration:none;color:inherit;display:inline-flex;align-items:center}
+.cmp-t{max-width:300px;margin:0 auto;width:100%}
+.cmp-sel{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cmp-sel label{display:grid;gap:4px;font-size:12.5px}
+.cmp-sel .a{color:var(--whistle)} .cmp-sel .b{color:#59c3ff}
+#cmpChart svg{display:block;width:100%;max-width:340px;margin:0 auto}
+.cmp-t{display:grid;grid-template-columns:1fr auto 1fr;gap:4px 12px;align-items:center;font-size:14px}
+.cmp-t b{font:800 20px/1 var(--num);color:var(--mute)}
+.cmp-t b.win.a{color:var(--whistle)} .cmp-t b.win.b{color:#59c3ff}
+.cmp-t .l{text-align:right} .cmp-t .m{color:var(--mute);text-align:center;font-size:13px}
+.share-img{display:block;width:100%;max-width:360px;margin:0 auto;border-radius:10px}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--chalk);color:var(--night);padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;max-width:calc(100vw - 32px);z-index:99}
 @media(prefers-reduced-motion:reduce){.card{transition:none;transform:none}.sheen{transition:none}.card-in::after{animation:none!important}.flip{transition:none}.stage{animation:none}}
 </style>
@@ -263,14 +319,18 @@ input[type=range]{width:100%;accent-color:var(--whistle)}
     <h1>球星卡面板</h1>
     <div class="sum" id="sum"></div>
     <div class="status" id="status"><i></i><span>准备中</span></div>
-    <button class="btn acct" id="acctBtn" type="button">登录</button>
+    <button class="btn acct" id="acctBtn" type="button" hidden>登录</button>
   </header>
+  <nav class="tabs" id="tabs" aria-label="页面">
+    <button class="tab" type="button" data-tab="cards" aria-pressed="true">球员卡</button>
+    <button class="tab" type="button" data-tab="matches" aria-pressed="false">比赛</button>
+  </nav>
 
+  <section id="vCards">
   <div class="bar">
     <button class="btn primary" id="addBtn" type="button">新建球星卡</button>
-    <button class="btn" id="importBtn" type="button">批量导入</button>
-    <button class="btn" id="exportBtn" type="button">导出</button>
-    <button class="btn" id="manageBtn" type="button">管理球员</button>
+    <button class="btn" id="cmpBtn" type="button">球员对比</button>
+    <button class="btn" id="manageBtn" type="button">管理我的卡</button>
   </div>
   <div class="bar">
     <div class="chips" id="chips" role="group" aria-label="按位置筛选"></div>
@@ -284,8 +344,15 @@ input[type=range]{width:100%;accent-color:var(--whistle)}
   </div>
 
   <div class="stylebar"><span>卡面风格</span><div class="chips" id="styles" role="group" aria-label="卡面风格"></div></div>
-  <div class="note" id="exNote" hidden><b>下面是示例卡。</b>添加第一张自己的卡后，示例会自动消失。点任意一张卡可以翻到背面看详细信息，登录后可以建卡、给别人的卡打分。</div>
+  <div class="note" id="exNote" hidden><b>下面是示例卡。</b>添加第一张自己的卡后，示例会自动消失。点任意一张卡可以翻到背面看详细信息、打分、对比和分享。</div>
   <main class="grid" id="grid"></main>
+  </section>
+
+  <section id="vMatches" hidden>
+    <div class="bar"><button class="btn primary" id="newMatch" type="button">记录一场比赛</button></div>
+    <div class="boards" id="boards"></div>
+    <div class="matches" id="matchList"></div>
+  </section>
 </div>
 
 <!-- 详情 -->
@@ -294,9 +361,9 @@ input[type=range]{width:100%;accent-color:var(--whistle)}
 <!-- 管理 -->
 <dialog id="dManage">
   <div class="dlg">
-    <div class="dlg-head"><h2>管理球员</h2><button class="x" type="button" data-close aria-label="关闭">×</button></div>
+    <div class="dlg-head"><h2>管理我的卡</h2><button class="x" type="button" data-close aria-label="关闭">×</button></div>
     <div class="mlist" id="mList"></div>
-    <div class="acts"><button class="btn" type="button" data-close>关闭</button><button class="btn primary" type="button" id="mAdd">新建球星卡</button></div>
+    <div class="acts"><button class="btn" type="button" id="importBtn">批量导入</button><button class="btn" type="button" id="exportBtn">导出全部</button><span style="flex:1"></span><button class="btn" type="button" data-close>关闭</button><button class="btn primary" type="button" id="mAdd">新建球星卡</button></div>
   </div>
 </dialog>
 
@@ -380,6 +447,57 @@ input[type=range]{width:100%;accent-color:var(--whistle)}
   </form>
 </dialog>
 
+<!-- 比赛 -->
+<dialog id="dMatch">
+  <form class="dlg" id="matchForm" novalidate>
+    <div class="dlg-head"><h2 id="matchTitle">记录比赛</h2><button class="x" type="button" data-close aria-label="关闭">×</button></div>
+    <div class="row">
+      <label>日期<input class="field" id="m-date" type="date"></label>
+      <label>名称<input class="field" id="m-title" maxlength="40" placeholder="如 周四夜踢"></label>
+    </div>
+    <label>备注<input class="field" id="m-note" maxlength="200" placeholder="比分、场地等，选填" style="width:100%"></label>
+    <div style="display:grid;gap:6px">
+      <span class="hint">勾选上场的人，再填进球和助攻</span>
+      <input class="field" id="m-q" type="search" placeholder="搜索球员">
+    </div>
+    <div class="mp-list" id="mpList"></div>
+    <div class="err" id="matchErr" role="alert"></div>
+    <div class="acts"><button class="btn danger" type="button" id="matchDel" hidden>删除比赛</button><span style="flex:1"></span><button class="btn" type="button" data-close>取消</button><button class="btn primary" type="submit" id="matchGo">保存</button></div>
+  </form>
+</dialog>
+
+<!-- MVP 投票 -->
+<dialog id="dMvp">
+  <form class="dlg" id="mvpForm" novalidate>
+    <div class="dlg-head"><h2 id="mvpTitle">投 MVP</h2><button class="x" type="button" data-close aria-label="关闭">×</button></div>
+    <p class="hint" id="mvpHint"></p>
+    <div class="vote-list" id="mvpList"></div>
+    <div class="err" id="mvpErr" role="alert"></div>
+    <div class="acts"><button class="btn" type="button" id="mvpClear" hidden>撤回我的票</button><span style="flex:1"></span><button class="btn" type="button" data-close>取消</button><button class="btn primary" type="submit" id="mvpGo">投票</button></div>
+  </form>
+</dialog>
+
+<!-- 对比 -->
+<dialog id="dCompare">
+  <div class="dlg">
+    <div class="dlg-head"><h2>球员对比</h2><button class="x" type="button" data-close aria-label="关闭">×</button></div>
+    <div class="cmp-sel"><label><span class="a">● 红方</span><select class="field" id="cmpA"></select></label><label><span class="b">● 蓝方</span><select class="field" id="cmpB"></select></label></div>
+    <div id="cmpChart"></div>
+    <div class="cmp-t" id="cmpTable"></div>
+    <p class="hint" id="cmpNote"></p>
+  </div>
+</dialog>
+
+<!-- 分享图片 -->
+<dialog id="dShare">
+  <div class="dlg">
+    <div class="dlg-head"><h2>分享卡片</h2><button class="x" type="button" data-close aria-label="关闭">×</button></div>
+    <img class="share-img" id="shareImg" alt="球星卡图片">
+    <p class="hint" style="text-align:center">手机上长按图片可以保存，或直接发给朋友</p>
+    <div class="acts"><button class="btn" type="button" data-close>关闭</button><a class="btn" id="shareDl" download="球星卡.jpg">下载图片</a><button class="btn primary" type="button" id="shareGo" hidden>分享</button></div>
+  </div>
+</dialog>
+
 <!-- 导入 / 导出 -->
 <dialog id="dIO">
   <div class="dlg">
@@ -440,6 +558,7 @@ function backHTML(c){
   <span class="b-head"><span class="b-name">${esc(c.name)}</span><span class="b-ovr">${esc(c.ovr)}</span></span>
   <span class="b-sub">${esc(c.pos)} · ${esc(POS[c.pos]||"")} · ${TIERS[tierOf(c)]}${c.n?` · ${c.n}人评分`:""}</span>
   <span class="b-bars">${L.map((l,i)=>`<span><em>${l}</em><b>${esc(st[i]??"–")}</b><i style="--w:${clamp(Number(st[i])||0,0,99)}%"></i></span>`).join("")}</span>
+  ${c.career&&c.career.apps?`<span class="b-career"><span><b>${c.career.apps}</b><em>出场</em></span><span><b>${c.career.goals}</b><em>进球</em></span><span><b>${c.career.assists}</b><em>助攻</em></span><span><b>${c.career.mvps}</b><em>MVP</em></span></span>`:""}
   ${meta.length?`<span class="b-meta">${meta.map(([k,v])=>`<span${k==="球队"?' class="wide"':""}><em>${k}</em>${esc(v)}</span>`).join("")}</span>`:""}
   ${c.note?`<span class="b-note">${esc(c.note)}</span>`:""}
 </span></span>`;
@@ -539,10 +658,10 @@ function render(){
 }
 function renderStatus(){
   const el=$("status"),t=el.querySelector("span");el.className="status";
-  if(mode==="sync"){el.classList.add("ok");t.textContent="共享卡池已连接"+(user?"":"，登录后可建卡和打分")}
+  if(mode==="sync"){el.classList.add("ok");t.textContent="共享卡池已连接"+(MODE==="login"&&!user?"，登录后可建卡和打分":"")+(isAdmin?" · 管理员":"")}
   else if(mode==="offline"){el.classList.add("local");t.textContent="连不上数据库，显示的是这台设备上次的缓存"}
   else t.textContent="正在连接数据…";
-  $("acctBtn").textContent=user?(user.email||"我").split("@")[0]+(isAdmin?" · 管理员":""):"登录";
+  $("acctBtn").hidden=MODE!=="login";$("acctBtn").textContent=user?(user.email||"我").split("@")[0]:"登录";
 }
 $("chips").innerHTML=GROUPS.map(([k,l])=>`<button class="chip" type="button" data-g="${k}" aria-pressed="${k==="all"}">${l}</button>`).join("");
 $("chips").addEventListener("click",e=>{const b=e.target.closest("[data-g]");if(!b)return;filter=b.dataset.g;
@@ -565,57 +684,89 @@ if(matchMedia("(hover:hover)").matches&&!matchMedia("(prefers-reduced-motion:red
 function toast(msg){const t=document.createElement("div");t.className="toast";t.textContent=msg;(document.querySelector("dialog[open]")||document.body).appendChild(t);setTimeout(()=>t.remove(),3200)}
 function errText(e){const c=e&&e.code;return c==="auth"?"登录已失效，请重新登录。":c==="forbidden"?"只有建卡人和管理员能改这张卡。":c==="not_found"?"这张卡已经被删除了。":
   c==="bad_data"?"数据不对或太大（照片太大就换一张小一点的）。":c==="offline"?"连不上数据库，检查网络后再试。":"保存失败，请稍后再试。"}
-const bodyOf=c=>{const b={...c};for(const k of["id","_local","owner","baseStats","baseOvr","n","mine"])delete b[k];return b};
-let user=null,isAdmin=false,raw=null,ratings=[];
-const canEdit=c=>!!(user&&c&&!String(c.id).startsWith("ex")&&(isAdmin||c.owner===user.id));
+const bodyOf=c=>{const b={...c};for(const k of["id","_local","owner","owner_key","baseStats","baseOvr","n","mine","career"])delete b[k];return b};
+/* 身份：open 模式按设备（本机随机密钥），login 模式按登录账号 */
+let MODE="open",user=null,isAdmin=false,myKey=null,raw=null,ratings=[],M={matches:[],players:[],votes:[]},matches=[];
+let DEVICE="";
+try{DEVICE=localStorage.getItem("playercards.device")||""}catch(e){}
+if(!/^[0-9a-f]{64}$/.test(DEVICE)){const a=new Uint8Array(32);crypto.getRandomValues(a);DEVICE=[...a].map(x=>x.toString(16).padStart(2,"0")).join("");try{localStorage.setItem("playercards.device",DEVICE)}catch(e){}}
+let deviceKey=null;
+(async()=>{try{const h=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(DEVICE));deviceKey="d:"+[...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,"0")).join("");updateKey()}catch(e){}})();
+function updateKey(){const k=MODE==="login"?(user?"u:"+user.id:null):deviceKey;if(k!==myKey){myKey=k;compose()}}
+const canAct=()=>MODE!=="login"||!!user;
+const canEdit=c=>!!(myKey&&c&&!String(c.id).startsWith("ex")&&(isAdmin||c.owner_key===myKey));
+const canEditMatch=m=>!!(myKey&&m&&(isAdmin||m.creator===myKey));
 function rpcErr(error){
   const m=((error&&error.message)||"").toLowerCase();
-  if(m.includes("not_signed_in")||m.includes("jwt"))return{code:"auth"};
+  if(m.includes("not_signed_in")||m.includes("no_device")||m.includes("jwt"))return{code:"auth"};
   if(m.includes("forbidden"))return{code:"forbidden"};
   if(m.includes("not_found"))return{code:"not_found"};
   if(m.includes("bad_data")||m.includes("bad_stats"))return{code:"bad_data"};
   return{code:"offline"};
 }
-async function call(fn,args){if(!sb)throw{code:"offline"};const {data,error}=await sb.rpc(fn,args);if(error)throw rpcErr(error);return data}
+async function call(fn,args){if(!sb)throw{code:"offline"};const {data,error}=await sb.rpc(fn,{...args,p_device:DEVICE});if(error)throw rpcErr(error);return data}
 async function saveCard(c){const id=await call("save_card",{p_id:c.id||null,p_data:bodyOf(c)});await refresh();return id}
 async function removeCard(id){await call("delete_card",{p_id:id});await refresh()}
 async function rateCard(id,stats){await call("rate_card",{p_card:id,p_stats:stats});await refresh()}
+async function checkAdmin(){if(!sb)return;try{const {data}=await sb.rpc("am_i_admin",{p_device:DEVICE});isAdmin=!!data}catch(e){isAdmin=false}compose();renderStatus()}
 async function refresh(){
-  const [a,b]=await Promise.all([sb.from("cards").select("id,data,owner").order("created_at",{ascending:true}),sb.from("ratings").select("card_id,user_id,stats")]);
+  const q=(t,cols)=>sb.from(t).select(cols);
+  const [a,b,m,mp,mv]=await Promise.all([q("cards","id,data,owner_key").order("created_at",{ascending:true}),q("ratings","card_id,voter,stats"),
+    q("matches","id,played_on,title,note,creator,created_at").order("played_on",{ascending:false}).order("created_at",{ascending:false}),
+    q("match_players","match_id,card_id,goals,assists"),q("mvp_votes","match_id,voter,card_id")]);
   if(a.error)throw a.error;if(b.error)throw b.error;
-  raw=a.data;ratings=b.data;mode="sync";compose();
+  raw=a.data;ratings=b.data;M={matches:m.data||[],players:mp.data||[],votes:mv.data||[]};mode="sync";compose();
 }
 /* 卡面分数 = 所有人评分的平均；总评在建卡人填的总评基础上，按位置权重随平均分浮动 */
 function compose(){
   if(!raw)return;
-  const by={},uid=user&&user.id;for(const r of ratings)(by[r.card_id]=by[r.card_id]||[]).push(r);
+  const by={};for(const r of ratings)(by[r.card_id]=by[r.card_id]||[]).push(r);
+  /* 比赛：每场的上场名单、MVP 票数，以及每个人的累计数据 */
+  const pBy={},vBy={},career={};
+  for(const p of M.players)(pBy[p.match_id]=pBy[p.match_id]||[]).push(p);
+  for(const v of M.votes)(vBy[v.match_id]=vBy[v.match_id]||[]).push(v);
+  matches=M.matches.map(m=>{
+    const players=pBy[m.id]||[],votes=vBy[m.id]||[],tally={};
+    for(const v of votes)tally[v.card_id]=(tally[v.card_id]||0)+1;
+    const top=Math.max(0,...Object.values(tally)),mvp=top?Object.keys(tally).filter(k=>tally[k]===top):[];
+    const mine=myKey&&votes.find(v=>v.voter===myKey);
+    for(const p of players){const c=career[p.card_id]=career[p.card_id]||{apps:0,goals:0,assists:0,mvps:0};
+      c.apps++;c.goals+=p.goals;c.assists+=p.assists;if(mvp.includes(p.card_id))c.mvps++}
+    return{...m,players,tally,mvp,votes:votes.length,myVote:mine?mine.card_id:null}});
   cards=raw.map(r=>{
     const d=r.data||{},base=Array.isArray(d.stats)?d.stats:[],rs=by[r.id]||[];
-    const c={...d,id:r.id,owner:r.owner,baseStats:base,baseOvr:d.ovr,n:rs.length,mine:null};
-    const m=uid&&rs.find(x=>x.user_id===uid);if(m)c.mine=m.stats;
+    const c={...d,id:r.id,owner_key:r.owner_key,baseStats:base,baseOvr:d.ovr,n:rs.length,mine:null,career:career[r.id]||null};
+    const m=myKey&&rs.find(x=>x.voter===myKey);if(m)c.mine=m.stats;
     if(rs.length&&base.length===6){
       const avg=[0,1,2,3,4,5].map(i=>Math.round(rs.reduce((t,x)=>t+Number(x.stats[i]),0)/rs.length));
       const w=WEIGHTS[groupOf(d.pos)]||WEIGHTS.mid,W=s=>s.reduce((t,v,i)=>t+Number(v)*w[i],0);
       c.stats=avg;c.ovr=clamp(Math.round(Number(d.ovr)+W(avg)-W(base)),1,99);
     }
     return c});
-  saveLocal();render();if($("dManage").open)drawManage();
+  saveLocal();render();renderMatches();if($("dManage").open)drawManage();
   if($("dView").open&&viewId){const c=cards.find(x=>x.id===viewId);if(c)openFlip(c,true)}
+  if($("dCompare").open)drawCompare();
 }
 let refTimer=0;
 async function boot(){
   cards=loadLocal();render();
   try{
     sb=window.supabase.createClient("https://utdhuhgiizwyjyfovaty.supabase.co","sb_publishable_o_iU_c0NyA6lFsD13mlHWQ_dZOW1tDh");
-    sb.auth.onAuthStateChange((ev,session)=>{
+    const md=await sb.rpc("get_mode");if(!md.error&&md.data)MODE=md.data;
+    if(MODE==="login")sb.auth.onAuthStateChange((ev,session)=>{
       const u=session&&session.user||null;if((u&&u.id)===(user&&user.id)){user=u;return}
-      user=u;isAdmin=false;compose();renderStatus();
-      if(user)setTimeout(()=>sb.rpc("am_i_admin").then(({data})=>{isAdmin=!!data;compose();renderStatus()}),0);
+      user=u;isAdmin=false;updateKey();renderStatus();
+      if(user)setTimeout(checkAdmin,0);
     });
-    await refresh();
+    updateKey();
+    /* 管理员链接：#admin=口令 */
+    const hm=location.hash.match(/^#admin=([\w-]+)/);
+    if(hm){history.replaceState(null,"",location.pathname+location.search);
+      try{const ok=await call("claim_admin",{p_token:hm[1]});toast(ok?"这台设备已设为管理员":"管理员链接无效")}catch(e){toast("管理员设置失败，请稍后再试")}}
+    await refresh();checkAdmin();
     const kick=()=>{clearTimeout(refTimer);refTimer=setTimeout(()=>refresh().catch(()=>{}),300)};
-    sb.channel("pool").on("postgres_changes",{event:"*",schema:"public",table:"cards"},kick)
-      .on("postgres_changes",{event:"*",schema:"public",table:"ratings"},kick).subscribe();
+    let ch=sb.channel("pool");for(const t of["cards","ratings","matches","match_players","mvp_votes"])ch=ch.on("postgres_changes",{event:"*",schema:"public",table:t},kick);
+    ch.subscribe();
   }catch(e){mode="offline";render()}
 }
 
@@ -667,7 +818,7 @@ $("loginForm").addEventListener("submit",async e=>{
     lgEmail="";sentAt=0;$("dLogin").close();toast("已登录");
     const f=afterLogin;afterLogin=null;if(f)setTimeout(f,50);
   }else{
-    go.disabled=true;await sb.auth.signOut().catch(()=>{});user=null;isAdmin=false;compose();renderStatus();$("dLogin").close();toast("已退出登录");
+    go.disabled=true;await sb.auth.signOut().catch(()=>{});user=null;isAdmin=false;updateKey();renderStatus();$("dLogin").close();toast("已退出登录");
   }
 });
 $("resendBtn").addEventListener("click",async()=>{if(!lgEmail)return;$("loginErr").textContent="";
@@ -676,8 +827,8 @@ $("changeEmail").addEventListener("click",()=>{lgEmail="";sentAt=0;lgStep="email
 $("acctBtn").addEventListener("click",()=>openLogin(null));
 /* 建卡、导入、管理需要先登录，登录后自动继续 */
 document.addEventListener("click",e=>{
-  const b=e.target.closest("#addBtn,#importBtn,#manageBtn");
-  if(!b||user)return;
+  const b=e.target.closest("#addBtn,#manageBtn,#newMatch");
+  if(!b||canAct())return;
   e.stopImmediatePropagation();e.preventDefault();openLogin(()=>b.click());
 },true);
 
@@ -713,7 +864,7 @@ let viewId=null;
 function openFlip(c,refresh){
   const prev=$("viewBody").querySelector(".card"),keep=refresh&&prev&&prev.classList.contains("flipped");
   viewId=c.id;const ex=String(c.id).startsWith("ex");
-  $("viewBody").innerHTML=cardHTML(c,"div",null,true)+(ex?"":`<div class="vacts"><button class="btn primary" type="button" id="rateBtn">${c.mine?"修改我的评分":"打分"}</button></div>`)+'<p class="flip-hint">点卡片翻面 · 点空白处关闭</p>';
+  $("viewBody").innerHTML=cardHTML(c,"div",null,true)+`<div class="vacts">${ex?"":`<button class="btn primary" type="button" data-act="rate">${c.mine?"改我的评分":"打分"}</button>`}<button class="btn" type="button" data-act="share">分享图片</button>${ex?"":`<button class="btn" type="button" data-act="cmp">对比</button>`}</div>`+'<p class="flip-hint">点卡片翻面 · 点空白处关闭</p>';
   const card=$("viewBody").querySelector(".card");
   card.addEventListener("click",()=>card.classList.toggle("flipped"));
   card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();card.classList.toggle("flipped")}});
@@ -723,8 +874,11 @@ function openFlip(c,refresh){
   setTimeout(()=>card.classList.add("flipped"),260);
 }
 $("viewBody").addEventListener("click",e=>{
-  if(!e.target.closest("#rateBtn"))return;const c=cards.find(x=>x.id===viewId);if(!c)return;
-  if(!user){openLogin(()=>{const c2=cards.find(x=>x.id===viewId);if(c2)openRate(c2)});return}
+  const btn=e.target.closest(".vacts [data-act]");if(!btn)return;const c=cards.find(x=>x.id===viewId)||EXAMPLES.find(x=>x.id===viewId);if(!c)return;
+  const act=btn.dataset.act;
+  if(act==="share"){shareCard(c);return}
+  if(act==="cmp"){openCompare(c.id);return}
+  if(!canAct()){openLogin(()=>{const c2=cards.find(x=>x.id===viewId);if(c2)openRate(c2)});return}
   openRate(c);
 });
 $("grid").addEventListener("click",e=>{const b=e.target.closest(".card[data-id]");if(!b)return;const c=shown().find(x=>String(x.id)===b.dataset.id);if(c)openFlip(c)});
@@ -828,6 +982,196 @@ $("ioGo").addEventListener("click",async()=>{
   $("ioGo").disabled=false;
   if(ok===out.length){$("dIO").close();toast(`已导入 ${ok} 张`+(bad.length?`，跳过第 ${bad.join("、")} 行`:""))}
 });
+
+/* ---------- 页签 ---------- */
+let tab="cards";try{if(localStorage.getItem("playercards.tab")==="matches")tab="matches"}catch(e){}
+function setTab(t){tab=t;$("vCards").hidden=t!=="cards";$("vMatches").hidden=t!=="matches";
+  document.querySelectorAll("#tabs .tab").forEach(b=>b.setAttribute("aria-pressed",b.dataset.tab===t));try{localStorage.setItem("playercards.tab",t)}catch(e){}}
+$("tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b)setTab(b.dataset.tab)});
+setTab(tab);
+
+/* ---------- 比赛 ---------- */
+const WEEK="日一二三四五六";
+function fmtDate(d){const [y,m,dd]=String(d).split("-").map(Number);const t=new Date(y,m-1,dd);return `${m}月${dd}日 周${WEEK[t.getDay()]}`+(y!==new Date().getFullYear()?` · ${y}`:"")}
+function todayStr(){const t=new Date();return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")}`}
+const cardById=id=>cards.find(c=>c.id===id);
+const nameOf=id=>{const c=cardById(id);return c?c.name:"（已删除）"};
+function renderMatches(){
+  const list=matches;
+  const lb=(k,title,unit)=>{const rows=cards.filter(c=>c.career&&c.career[k]>0).sort((a,b)=>b.career[k]-a.career[k]||String(a.name).localeCompare(b.name,"zh")).slice(0,5);
+    return `<div class="board"><h3>${title}</h3>${rows.length?`<ol>${rows.map((c,i)=>`<li><i>${i+1}</i><span>${esc(c.name)}</span><b>${c.career[k]}</b></li>`).join("")}</ol>`:'<p class="hint">暂无</p>'}</div>`};
+  $("boards").innerHTML=list.length?lb("goals","射手榜")+lb("assists","助攻榜")+lb("mvps","MVP 榜"):"";
+  $("matchList").innerHTML=list.length?list.map(m=>{
+    const ps=m.players.slice().sort((a,b)=>b.goals-a.goals||b.assists-a.assists||nameOf(a.card_id).localeCompare(nameOf(b.card_id),"zh"));
+    const mvpTxt=m.mvp.length?`MVP：${m.mvp.map(id=>esc(nameOf(id))).join("、")}（${m.tally[m.mvp[0]]}票）`:"还没人投 MVP";
+    return `<article class="match" data-mid="${esc(m.id)}">
+      <div class="mh"><b>${esc(m.title||"比赛")}</b><small>${fmtDate(m.played_on)} · ${m.players.length}人</small><span class="mvpline">${mvpTxt}</span></div>
+      <div class="pcs">${ps.map(p=>`<span class="pc${m.mvp.includes(p.card_id)?" mvp":""}">${esc(nameOf(p.card_id))}${p.goals?`<b>${p.goals}</b>球`:""}${p.assists?`<b>${p.assists}</b>助`:""}</span>`).join("")}</div>
+      ${m.note?`<p class="hint">${esc(m.note)}</p>`:""}
+      <div class="ma"><button class="btn" type="button" data-mop="mvp">${m.myVote?"改 MVP 票":"投 MVP"}</button>${canEditMatch(m)?'<button class="btn" type="button" data-mop="edit">编辑</button>':""}</div>
+    </article>`}).join(""):`<p class="empty">还没有比赛记录。踢完一场点「记录一场比赛」，勾上谁来了、谁进球助攻，大家再投 MVP。</p>`;
+}
+$("matchList").addEventListener("click",e=>{
+  const b=e.target.closest("[data-mop]");if(!b)return;const m=matches.find(x=>x.id===b.closest(".match").dataset.mid);if(!m)return;
+  if(!canAct()){openLogin(null);return}
+  if(b.dataset.mop==="mvp")openMvp(m);else openMatch(m);
+});
+let mEdit=null,mState=new Map();
+function openMatch(m){
+  if(!cards.length){toast("先建几张球员卡，才能记录比赛");return}
+  mEdit=m||null;mState=new Map();
+  if(m)for(const p of m.players)mState.set(p.card_id,{goals:p.goals,assists:p.assists});
+  $("matchTitle").textContent=m?"编辑比赛":"记录比赛";
+  $("m-date").value=m?m.played_on:todayStr();$("m-title").value=m?m.title:"周四夜踢";$("m-note").value=m?m.note:"";$("m-q").value="";
+  $("matchDel").hidden=!m;$("matchDel").textContent="删除比赛";delete $("matchDel").dataset.armed;
+  $("matchErr").textContent="";$("matchGo").disabled=false;drawMp();$("dMatch").showModal();
+}
+function drawMp(){
+  const q=$("m-q").value.trim().toLowerCase();
+  const list=cards.filter(c=>!q||String(c.name).toLowerCase().includes(q)).sort((a,b)=>(mState.has(b.id)-mState.has(a.id))||String(a.name).localeCompare(b.name,"zh"));
+  $("mpList").innerHTML='<div class="mp mp-head"><span>球员</span><span>进球</span><span>助攻</span></div>'+list.map(c=>{const st=mState.get(c.id);
+    return `<div class="mp${st?" on":""}" data-id="${esc(c.id)}"><label class="mp-who"><input type="checkbox"${st?" checked":""}><span title="${esc(c.pos)}">${esc(c.name)}</span></label>
+      <span class="step" data-k="goals"><button type="button" data-d="-1" aria-label="减少进球">−</button><b>${st?st.goals:0}</b><button type="button" data-d="1" aria-label="增加进球">+</button></span>
+      <span class="step" data-k="assists"><button type="button" data-d="-1" aria-label="减少助攻">−</button><b>${st?st.assists:0}</b><button type="button" data-d="1" aria-label="增加助攻">+</button></span></div>`}).join("")
+    +(list.length?"":'<p class="hint" style="padding:8px 0">没有匹配的球员</p>');
+}
+$("m-q").addEventListener("input",drawMp);
+$("mpList").addEventListener("change",e=>{const cb=e.target.closest("input[type=checkbox]");if(!cb)return;const row=cb.closest(".mp"),id=row.dataset.id;
+  if(cb.checked)mState.set(id,mState.get(id)||{goals:0,assists:0});else mState.delete(id);row.classList.toggle("on",cb.checked);
+  if(!cb.checked)row.querySelectorAll(".step b").forEach(x=>x.textContent="0")});
+$("mpList").addEventListener("click",e=>{const btn=e.target.closest("[data-d]");if(!btn)return;const row=btn.closest(".mp"),st=mState.get(row.dataset.id);if(!st)return;
+  const k=btn.closest(".step").dataset.k;st[k]=clamp(st[k]+Number(btn.dataset.d),0,50);btn.parentNode.querySelector("b").textContent=st[k]});
+$("matchForm").addEventListener("submit",async e=>{
+  e.preventDefault();const err=$("matchErr"),date=$("m-date").value;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)){err.textContent="请选择日期。";return}
+  if(!mState.size){err.textContent="至少勾选一名上场球员。";return}
+  const players=[...mState].map(([card_id,v])=>({card_id,goals:v.goals,assists:v.assists}));
+  $("matchGo").disabled=true;
+  try{await call("save_match",{p_id:mEdit?mEdit.id:null,p_played_on:date,p_title:$("m-title").value.trim(),p_note:$("m-note").value.trim(),p_players:players});
+    await refresh();$("dMatch").close();toast("比赛已保存")}
+  catch(x){err.textContent=x&&x.code==="forbidden"?"只有记录这场比赛的人和管理员能改。":errText(x);$("matchGo").disabled=false}
+});
+$("matchDel").addEventListener("click",async e=>{const b=e.currentTarget;if(!mEdit)return;
+  if(!b.dataset.armed){b.dataset.armed="1";b.textContent="确认删除";return}
+  b.disabled=true;try{await call("delete_match",{p_id:mEdit.id});await refresh();$("dMatch").close();toast("已删除")}catch(x){$("matchErr").textContent=errText(x)}b.disabled=false});
+$("newMatch").addEventListener("click",()=>openMatch(null));
+
+let mvpMatch=null;
+function openMvp(m){
+  mvpMatch=m.id;const total=m.votes;
+  $("mvpTitle").textContent=`投 MVP · ${m.title||"比赛"}`;
+  $("mvpHint").textContent=`${fmtDate(m.played_on)}。每人一票，可以改票。现在 ${total} 票。`;
+  const ps=m.players.slice().sort((a,b)=>(m.tally[b.card_id]||0)-(m.tally[a.card_id]||0)||b.goals-a.goals);
+  $("mvpList").innerHTML=ps.map(p=>{const n=m.tally[p.card_id]||0;return `<label class="vote" style="--w:${total?n/total*100:0}%"><i></i><input type="radio" name="mvp" value="${esc(p.card_id)}"${m.myVote===p.card_id?" checked":""}>
+    <span>${esc(nameOf(p.card_id))}<small class="hint"> ${p.goals?p.goals+"球 ":""}${p.assists?p.assists+"助":""}</small></span><b>${n}</b></label>`}).join("");
+  $("mvpClear").hidden=!m.myVote;$("mvpErr").textContent="";$("mvpGo").disabled=false;$("mvpGo").textContent=m.myVote?"改票":"投票";
+  $("dMvp").showModal();
+}
+async function sendMvp(card){$("mvpGo").disabled=true;
+  try{await call("vote_mvp",{p_match:mvpMatch,p_card:card});await refresh();$("dMvp").close();toast(card?"已投票":"已撤回")}
+  catch(x){$("mvpErr").textContent=errText(x);$("mvpGo").disabled=false}}
+$("mvpForm").addEventListener("submit",e=>{e.preventDefault();const r=$("mvpList").querySelector("input:checked");if(!r){$("mvpErr").textContent="先选一个人。";return}sendMvp(r.value)});
+$("mvpClear").addEventListener("click",()=>sendMvp(null));
+
+/* ---------- 球员对比：雷达图 ---------- */
+function openCompare(aId){
+  const list=shown().slice().sort((a,b)=>b.ovr-a.ovr);if(list.length<2){toast("至少要有两张卡才能对比");return}
+  const opts=list.map(c=>`<option value="${esc(c.id)}">${esc(c.ovr)} · ${esc(c.name)}（${esc(c.pos)}）</option>`).join("");
+  $("cmpA").innerHTML=opts;$("cmpB").innerHTML=opts;
+  const a=aId&&list.find(c=>c.id===aId)?aId:list[0].id;$("cmpA").value=a;$("cmpB").value=(list.find(c=>c.id!==a)||list[0]).id;
+  drawCompare();if(!$("dCompare").open)$("dCompare").showModal();
+}
+function drawCompare(){
+  const all=shown(),A=all.find(c=>String(c.id)===$("cmpA").value),B=all.find(c=>String(c.id)===$("cmpB").value);if(!A||!B)return;
+  const L=labelsOf(A.pos),sa=A.stats||[],sb2=B.stats||[],R=96,cx=150,cy=138;
+  const pt=(i,v)=>{const ang=-Math.PI/2+i*Math.PI/3,r=R*clamp(Number(v)||0,0,99)/99;return[cx+r*Math.cos(ang),cy+r*Math.sin(ang)]};
+  const poly=s=>[0,1,2,3,4,5].map(i=>pt(i,s[i]).map(n=>n.toFixed(1)).join(",")).join(" ");
+  const rings=[25,50,75,99].map(v=>`<polygon points="${poly([v,v,v,v,v,v])}" fill="none" stroke="var(--line)" stroke-width="1"/>`).join("");
+  const axes=[0,1,2,3,4,5].map(i=>{const[x,y]=pt(i,99);return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="var(--line)"/>`}).join("");
+  const labels=L.map((l,i)=>{const[x,y]=pt(i,123);return `<text x="${x.toFixed(1)}" y="${(y+5).toFixed(1)}" text-anchor="middle" font-size="13" fill="var(--mute)">${l}</text>`}).join("");
+  $("cmpChart").innerHTML=`<svg viewBox="0 0 300 280" role="img" aria-label="${esc(A.name)} 和 ${esc(B.name)} 的六项能力对比">${rings}${axes}
+    <polygon points="${poly(sb2)}" fill="rgba(89,195,255,.22)" stroke="#59c3ff" stroke-width="2.5" stroke-linejoin="round"/>
+    <polygon points="${poly(sa)}" fill="rgba(255,90,77,.22)" stroke="#ff5a4d" stroke-width="2.5" stroke-linejoin="round"/>${labels}</svg>`;
+  const row=(va,l,vb)=>{const x=Number(va),y=Number(vb);return `<b class="l a${x>y?" win":""}">${esc(va)}</b><span class="m">${l}</span><b class="b${y>x?" win":""}">${esc(vb)}</b>`};
+  $("cmpTable").innerHTML=row(A.ovr,"总评",B.ovr)+L.map((l,i)=>row(sa[i]??"–",l,sb2[i]??"–")).join("");
+  const ga=A.pos==="GK",gb=B.pos==="GK";
+  $("cmpNote").textContent=ga!==gb?"注意：门将和场上球员的六项属性含义不同，按顺序对比仅供参考。":(A.n||B.n?`红方 ${A.n||0} 人评分，蓝方 ${B.n||0} 人评分。`:"");
+}
+$("cmpA").addEventListener("change",drawCompare);$("cmpB").addEventListener("change",drawCompare);
+$("cmpBtn").addEventListener("click",()=>openCompare(null));
+
+/* ---------- 分享图片：用 Canvas 画一张锋刃风格的卡 ---------- */
+const TIER_COL={bronze:["#f3c4a0","#b06c42","#57290f","#2a1408","#ff9d5c","#2a1408","#f7d2b4"],silver:["#ffffff","#b4bcc9","#5d6776","#1b2029","#cfdcf2","#1b2029","#f3f6fa"],
+  gold:["#fff3c2","#e3b033","#8a5a06","#2c1d02","#ffd24a","#2c1d02","#ffe9a0"],onyx:["#4d5263","#17181d","#040405","#f0cf7a","#f0cf7a","#f0cf7a","#131317"],
+  legend:["#ffffff","#efe3c8","#b89d5e","#57400c","#ffeab0","#57400c","#fff8e2"],prism:["#7cf3e1","#6b7cff","#c543d1","#ffffff","#8ffcf0","#1b1145","#ffffff"]};
+const loadImg=src=>new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=src});
+function fitText(x,txt,maxW,size,weight,fam){let s=size;do{x.font=`${weight} ${s}px ${fam}`;if(x.measureText(txt).width<=maxW)break;s-=2}while(s>12);return s}
+async function drawShare(c){
+  const NUM='"Saira Condensed","Noto Sans SC",sans-serif',BODY='"Noto Sans SC","PingFang SC",sans-serif';
+  try{await Promise.race([Promise.all([document.fonts.load(`800 100px "Saira Condensed"`),document.fonts.load(`900 60px "Noto Sans SC"`)]),new Promise(r=>setTimeout(r,1500))])}catch(e){}
+  const [c1,c2,c3,ink,glow,plate,plateInk]=TIER_COL[tierOf(c)]||TIER_COL.gold;
+  const W=1080,H=1560,cv=document.createElement("canvas");cv.width=W;cv.height=H;const x=cv.getContext("2d");
+  x.fillStyle="#12151f";x.fillRect(0,0,W,H);
+  let g=x.createRadialGradient(W/2,560,40,W/2,560,760);g.addColorStop(0,glow+"55");g.addColorStop(1,"rgba(18,21,31,0)");x.fillStyle=g;x.fillRect(0,0,W,H);
+  const cw=860,u=cw/100,ch=142*u,X=(W-cw)/2,Y=80,k=12*u;
+  const shape=()=>{x.beginPath();x.moveTo(X,Y);x.lineTo(X+cw-k,Y);x.lineTo(X+cw,Y+k);x.lineTo(X+cw,Y+ch);x.lineTo(X+k,Y+ch);x.lineTo(X,Y+ch-k);x.closePath()};
+  x.save();x.shadowColor="rgba(0,0,0,.55)";x.shadowBlur=60;x.shadowOffsetY=24;shape();x.fillStyle=c3;x.fill();x.restore();
+  x.save();shape();x.clip();
+  g=x.createLinearGradient(X+cw*.25,Y,X+cw*.75,Y+ch);g.addColorStop(0,c1);g.addColorStop(.46,c2);g.addColorStop(1,c3);x.fillStyle=g;x.fillRect(X,Y,cw,ch);
+  g=x.createLinearGradient(X,Y+ch*.15,X+cw,Y+ch*.55);g.addColorStop(.28,"rgba(255,255,255,0)");g.addColorStop(.44,"rgba(255,255,255,.34)");g.addColorStop(.56,"rgba(255,255,255,0)");x.fillStyle=g;x.fillRect(X,Y,cw,ch);
+  /* 放射光芒 */
+  x.save();x.translate(X+64*u,Y+34*u);x.globalAlpha=.1;x.fillStyle="#fff";
+  for(let a=0;a<360;a+=11){x.beginPath();x.moveTo(0,0);x.arc(0,0,60*u,(a+8)*Math.PI/180,(a+11)*Math.PI/180);x.closePath();x.fill()}x.restore();
+  /* 背景大字 */
+  const hasNum=c.number!=null&&c.number!=="";x.save();x.globalAlpha=.12;x.fillStyle=ink;x.font=`800 ${60*u}px ${NUM}`;x.textAlign="right";x.textBaseline="top";x.fillText(String(hasNum?c.number:c.pos),X+cw-4*u,Y+4*u);x.restore();
+  /* 照片 */
+  const px=X+cw-2*u-68*u,py=Y+8*u,pw=68*u,ph=76*u,photo=safePhoto(c.photo);
+  const off=document.createElement("canvas");off.width=Math.round(pw);off.height=Math.round(ph);const o=off.getContext("2d");
+  if(photo){try{const im=await loadImg(photo);const opaque=isOpaque(im);
+      if(opaque){const s=Math.max(pw/im.width,ph/im.height),w=im.width*s,h=im.height*s;o.drawImage(im,(pw-w)/2,(ph-h)*.12,w,h);
+        o.globalCompositeOperation="destination-in";let m=o.createLinearGradient(0,0,pw,0);m.addColorStop(0,"rgba(0,0,0,0)");m.addColorStop(.4,"#000");o.fillStyle=m;o.fillRect(0,0,pw,ph)}
+      else{const s=Math.min(pw/im.width,ph/im.height),w=im.width*s,h=im.height*s;o.shadowColor="rgba(0,0,0,.35)";o.shadowBlur=20;o.shadowOffsetY=8;o.drawImage(im,(pw-w)/2,ph-h,w,h)}
+    }catch(e){}}
+  else{o.globalAlpha=.22;o.fillStyle=ink;o.beginPath();o.arc(pw/2,ph*.32,ph*.17,0,Math.PI*2);o.fill();o.beginPath();o.ellipse(pw/2,ph,pw*.36,ph*.4,0,Math.PI,0);o.fill()}
+  o.globalAlpha=1;o.globalCompositeOperation="destination-in";let fm=o.createLinearGradient(0,0,0,ph);fm.addColorStop(.75,"#000");fm.addColorStop(1,"rgba(0,0,0,0)");o.fillStyle=fm;o.fillRect(0,0,pw,ph);
+  x.drawImage(off,px,py);
+  /* 左侧：总评、位置、标签 */
+  const lx=X+7*u+13*u;x.fillStyle=ink;x.textAlign="center";x.textBaseline="alphabetic";
+  x.font=`800 ${27*u}px ${NUM}`;x.fillText(String(c.ovr),lx,Y+9*u+23*u);
+  x.font=`600 ${10*u}px ${NUM}`;x.fillText(String(c.pos),lx,Y+9*u+33.5*u);
+  x.globalAlpha=.45;x.fillRect(lx-7*u,Y+9*u+36.5*u,14*u,.5*u);x.globalAlpha=1;
+  let ty=Y+9*u+45*u;x.font=`600 ${7*u}px ${NUM}`;
+  if(c.nation){x.fillText(String(c.nation),lx,ty);ty+=8.5*u}if(hasNum)x.fillText("#"+c.number,lx,ty);
+  /* 名牌 */
+  const nx=X+3.4*u,ny=Y+84*u,nw=cw-6.8*u,nh=14.5*u,sk=4.5*u;
+  x.beginPath();x.moveTo(nx+sk,ny);x.lineTo(nx+nw,ny);x.lineTo(nx+nw-sk,ny+nh);x.lineTo(nx,ny+nh);x.closePath();x.fillStyle=plate;x.fill();
+  x.fillStyle=plateInk;const fs=fitText(x,String(c.name),nw-14*u,10*u,900,BODY);x.textBaseline="middle";x.fillText(String(c.name),X+cw/2,ny+nh/2+fs*.04);
+  /* 六项 */
+  const L=labelsOf(c.pos),st=c.stats||[],sx=X+5*u,sw=(cw-10*u)/6;x.textBaseline="alphabetic";
+  for(let i=0;i<6;i++){const cxm=sx+sw*(i+.5);x.fillStyle=ink;x.globalAlpha=.8;x.font=`500 ${5.3*u}px ${BODY}`;x.fillText(L[i],cxm,Y+104*u+5.3*u);
+    x.globalAlpha=1;x.font=`800 ${9.4*u}px ${NUM}`;x.fillText(String(st[i]??"–"),cxm,Y+104*u+16.5*u);
+    if(i){x.globalAlpha=.28;x.fillRect(sx+sw*i-.17*u,Y+104*u,.35*u,17*u);x.globalAlpha=1}}
+  if(c.club){x.globalAlpha=.72;x.font=`700 ${5.6*u}px ${BODY}`;x.fillText(String(c.club).split("").join(" "),X+cw/2,Y+127.5*u+5.6*u);x.globalAlpha=1}
+  x.restore();
+  x.save();shape();x.lineWidth=5;x.strokeStyle=glow;x.globalAlpha=.7;x.stroke();x.restore();
+  /* 底部说明 */
+  x.textAlign="center";x.fillStyle="#eef0f5";x.font=`900 40px ${BODY}`;x.fillText("球星卡面板",W/2,Y+ch+92);
+  const sub=[TIERS[tierOf(c)],c.n?`${c.n} 人评分`:"",c.career&&c.career.apps?`${c.career.apps} 场 ${c.career.goals} 球 ${c.career.assists} 助`:""].filter(Boolean).join(" · ");
+  x.fillStyle="#8f98ad";x.font=`500 28px ${BODY}`;x.fillText(sub,W/2,Y+ch+140);x.fillText(location.host||"player-cards-ten.vercel.app",W/2,Y+ch+182);
+  return cv;
+}
+let shareFile=null;
+async function shareCard(c){
+  toast("正在生成图片…");
+  try{const cv=await drawShare(c),url=cv.toDataURL("image/jpeg",.92);
+    $("shareImg").src=url;$("shareDl").href=url;$("shareDl").download=`${c.name||"球星卡"}.jpg`;
+    shareFile=null;$("shareGo").hidden=true;
+    cv.toBlob(b=>{if(!b)return;const f=new File([b],`${c.name||"card"}.jpg`,{type:"image/jpeg"});
+      if(navigator.canShare&&navigator.canShare({files:[f]})){shareFile=f;$("shareGo").hidden=false}},"image/jpeg",.92);
+    $("dShare").showModal();
+  }catch(e){toast("生成图片失败，请稍后再试")}
+}
+$("shareGo").addEventListener("click",async()=>{if(!shareFile)return;try{await navigator.share({files:[shareFile]})}catch(e){}});
 
 boot();
 })();
