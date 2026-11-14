@@ -169,25 +169,27 @@ h1{font-size:26px;font-weight:900;margin:0;letter-spacing:.02em;text-wrap:balanc
 .flip{display:block;position:relative;transform-style:preserve-3d;transition:transform .75s cubic-bezier(.3,.7,.2,1)}
 .card.flipped .flip{transform:rotateY(180deg)}
 .card-in,.card-back{-webkit-backface-visibility:hidden;backface-visibility:hidden}
-.card-back{position:absolute;inset:0;transform:rotateY(180deg);color:#fff;padding:8cqw 8cqw 7cqw;display:flex;flex-direction:column;gap:2.6cqw;overflow:hidden;border-radius:6cqw;
+.card-back{position:absolute;inset:0;transform:rotateY(180deg);color:#fff;padding:7cqw 8cqw 6cqw;display:block;overflow:hidden;border-radius:6cqw;
   background:radial-gradient(90% 45% at 15% 0,color-mix(in srgb,var(--glow) 38%,transparent),transparent 72%),
     repeating-linear-gradient(118deg,rgba(255,255,255,.035) 0 .8cqw,transparent .8cqw 5cqw),linear-gradient(170deg,color-mix(in srgb,var(--c3) 45%,#10131b),#08090d 72%);
   box-shadow:inset 0 0 0 .7cqw color-mix(in srgb,var(--glow) 78%,transparent)}
 .s-blade .card-back{border-radius:0;clip-path:polygon(12cqw 0,100% 0,100% calc(100% - 12cqw),calc(100% - 12cqw) 100%,0 100%,0 12cqw);padding-left:10cqw}
+.b-inner{display:flex;flex-direction:column;gap:2cqw;transform-origin:0 0}
 .b-head{display:flex;align-items:flex-end;justify-content:space-between;gap:3cqw}
-.b-name{font-weight:900;font-size:9cqw;line-height:1.15;overflow-wrap:anywhere}
-.b-ovr{font:800 15cqw/.85 var(--num);color:var(--glow)}
-.b-sub{font-size:4.9cqw;color:var(--glow);letter-spacing:.08em;border-bottom:.4cqw solid color-mix(in srgb,var(--glow) 45%,transparent);padding-bottom:2.4cqw}
-.b-bars{display:grid;gap:1.7cqw}
+.b-name{font-weight:900;font-size:8.4cqw;line-height:1.15;overflow-wrap:anywhere}
+.b-ovr{font:800 14cqw/.85 var(--num);color:var(--glow)}
+.b-sub{font-size:4.6cqw;color:var(--glow);letter-spacing:.08em;border-bottom:.4cqw solid color-mix(in srgb,var(--glow) 45%,transparent);padding-bottom:2cqw}
+.b-bars{display:grid;gap:1.1cqw}
 .b-bars>span{display:grid;grid-template-columns:11.5cqw 8.5cqw 1fr;align-items:center;gap:2cqw}
 .b-bars em{font-style:normal;font-size:5cqw;opacity:.8}
-.b-bars b{font:800 7cqw/1 var(--num);text-align:right;font-variant-numeric:tabular-nums}
+.b-bars b{font:800 6.6cqw/1 var(--num);text-align:right;font-variant-numeric:tabular-nums}
 .b-bars i{display:block;height:1.9cqw;border-radius:1cqw;background:rgba(255,255,255,.12);overflow:hidden}
 .b-bars i::after{content:"";display:block;height:100%;width:var(--w);border-radius:1cqw;background:linear-gradient(90deg,color-mix(in srgb,var(--glow) 55%,transparent),var(--glow))}
-.b-meta{display:grid;grid-template-columns:1fr 1fr;gap:1.5cqw 4cqw;font-size:4.9cqw;border-top:.4cqw solid rgba(255,255,255,.14);padding-top:2.6cqw}
+.b-meta{display:grid;grid-template-columns:1fr 1fr;gap:.9cqw 4cqw;font-size:4.6cqw;line-height:1.45;border-top:.4cqw solid rgba(255,255,255,.14);padding-top:2.2cqw}
 .b-meta span{display:flex;justify-content:space-between;gap:2cqw;white-space:nowrap;overflow:hidden}
 .b-meta em{font-style:normal;opacity:.6}
-.b-note{font-size:4.7cqw;line-height:1.45;opacity:.82;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.b-meta .wide{grid-column:1/-1}
+.b-note{font-size:4.5cqw;line-height:1.4;opacity:.82;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
 #dView{background:none;border:0;padding:0;width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;overflow:hidden}
 #dView[open]{display:grid;place-items:center}
 #dView::backdrop{background:rgba(6,8,14,.86)}
@@ -401,13 +403,13 @@ function backHTML(c){
   const L=labelsOf(c.pos),st=c.stats||[];
   const meta=[c.club&&["球队",c.club],c.nation&&["国籍",c.nation],c.number!=null&&c.number!==""&&["号码","#"+c.number],c.foot&&["惯用脚",c.foot],
     c.weak&&["逆足",stars(c.weak)],c.skill&&["花式",stars(c.skill)],c.height&&["身高",c.height+" cm"],c.age&&["年龄",c.age]].filter(Boolean);
-  return `<span class="card-back">
+  return `<span class="card-back"><span class="b-inner">
   <span class="b-head"><span class="b-name">${esc(c.name)}</span><span class="b-ovr">${esc(c.ovr)}</span></span>
   <span class="b-sub">${esc(c.pos)} · ${esc(POS[c.pos]||"")} · ${TIERS[tierOf(c)]}</span>
   <span class="b-bars">${L.map((l,i)=>`<span><em>${l}</em><b>${esc(st[i]??"–")}</b><i style="--w:${clamp(Number(st[i])||0,0,99)}%"></i></span>`).join("")}</span>
-  ${meta.length?`<span class="b-meta">${meta.map(([k,v])=>`<span><em>${k}</em>${esc(v)}</span>`).join("")}</span>`:""}
+  ${meta.length?`<span class="b-meta">${meta.map(([k,v])=>`<span${k==="球队"?' class="wide"':""}><em>${k}</em>${esc(v)}</span>`).join("")}</span>`:""}
   ${c.note?`<span class="b-note">${esc(c.note)}</span>`:""}
-</span>`;
+</span></span>`;
 }
 function cardHTML(c,tag,sty,back){
   const L=labelsOf(c.pos),p=safePhoto(c.photo),st=Array.isArray(c.stats)?c.stats:[],hasNum=c.number!=null&&c.number!=="";
@@ -587,12 +589,21 @@ $("codeForm").addEventListener("submit",async e=>{
 });
 
 /* ---------- 点卡片：放大并翻到背面 ---------- */
+/* 背面内容放不下时整体按比例缩小，保证不被截断 */
+function fitBack(card){
+  const back=card.querySelector(".card-back"),inner=back&&back.querySelector(".b-inner");if(!inner)return;
+  inner.style.transform="";inner.style.width="";
+  const cs=getComputedStyle(back),avail=back.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);
+  const need=inner.scrollHeight;
+  if(need>avail){const k=Math.max(.6,avail/need);inner.style.transform=`scale(${k})`;inner.style.width=(100/k)+"%"}
+}
 function openFlip(c){
   $("viewBody").innerHTML=cardHTML(c,"div",null,true)+'<p class="flip-hint">点卡片翻面 · 点空白处关闭</p>';
   const card=$("viewBody").querySelector(".card");
   card.addEventListener("click",()=>card.classList.toggle("flipped"));
   card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();card.classList.toggle("flipped")}});
   $("dView").showModal();
+  fitBack(card);if(document.fonts)document.fonts.ready.then(()=>fitBack(card));
   setTimeout(()=>card.classList.add("flipped"),260);
 }
 $("grid").addEventListener("click",e=>{const b=e.target.closest(".card[data-id]");if(!b)return;const c=shown().find(x=>String(x.id)===b.dataset.id);if(c)openFlip(c)});
